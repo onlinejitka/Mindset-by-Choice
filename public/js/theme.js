@@ -1,29 +1,25 @@
 /**
  * ==========================================================================
- * JS/THEME.JS (Bulletproof Anti-Flash Theme Engine with Console Telemetry)
+ * JS/THEME.JS (Default Light Theme Edition - Anti-Flash)
  * ==========================================================================
  */
 
-// 1. IMMEDIATE EXECUTION (Runs in head to prevent white/black flash)
-const savedTheme = localStorage.getItem('mindset_theme') || 'dark';
+// 1. IMMEDIATE EXECUTION (Změněno z 'dark' na 'light' pro výchozí denní vzhled)
+const savedTheme = localStorage.getItem('mindset_theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 console.log("🌓 ThemeEngine: Initialized immediately with theme ->", savedTheme);
 
-// 2. SAFELY ATTACH TOGGLE LOGIC (Runs as soon as DOM is ready or already loaded)
+// 2. SAFELY ATTACH TOGGLE LOGIC
 function initThemeToggle() {
     const toggleBtn = document.getElementById('theme-toggle');
     
-    if (!toggleBtn) {
-        console.log("🌓 ThemeEngine: Button '#theme-toggle' not found on this page. Skipping listener.");
-        return;
-    }
+    if (!toggleBtn) return;
 
-    // Sync button text with current state
+    // Synchronizace textu tlačítka s aktuálním stavem
     const currentTheme = document.documentElement.getAttribute('data-theme');
     toggleBtn.textContent = currentTheme === 'light' ? '[ Night ]' : '[ Day ]';
-    console.log("🌓 ThemeEngine: Button found and synchronized text layout.");
 
-    // Direct click execution mapping
+    // Obsluha kliknutí
     toggleBtn.onclick = function () {
         const activeTheme = document.documentElement.getAttribute('data-theme');
         let newTheme = 'dark';
@@ -41,7 +37,6 @@ function initThemeToggle() {
     };
 }
 
-// Guardrail against fast browser caching (DOMContentLoaded might have already fired)
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initThemeToggle);
 } else {
