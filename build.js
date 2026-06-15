@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Telemetry Edition - Global Try/Catch Wrapper)
+ * BUILD.JS (Strict Select-Filter Edition - Error 400 Resolved)
  * Language: Node.js
  * ==========================================================================
  */
@@ -54,7 +54,6 @@ async function updateNotionStatus(pageId, newStatus) {
 }
 
 async function build() {
-    // Wrapping the entire execution in a safe cage to print debugging logs on crash
     try {
         console.log("⚡ Initializing Architecture Build from Notion...");
 
@@ -67,16 +66,15 @@ async function build() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                // STRICTLY USING 'select' FILTER ONLY TO PREVENT NOTION API 400 ERROR
                 filter: {
                     or: [
                         { property: 'Status', select: { equals: 'Prepared' } },
-                        { property: 'Status', status: { equals: 'Prepared' } },
-                        { property: 'Status', select: { equals: 'Published' } },
-                        { property: 'Status', status: { equals: 'Published' } }
+                        { property: 'Status', select: { equals: 'Published' } }
                     ]
                 },
                 sorts: [{ property: 'Publish', direction: 'descending' }]
-            }	)
+            })
         });
 
         const dbData = await dbResponse.json();
@@ -104,7 +102,7 @@ async function build() {
             let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
             const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
             
-            const status = props.Status?.select?.name || props.Status?.status?.name || 'Draft';
+            const status = props.Status?.select?.name || 'Draft';
             const category = props.Category?.select?.name || 'General';
             const dateStr = props.Publish?.date?.start || '2026-01-01'; 
             const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
@@ -308,7 +306,6 @@ async function build() {
         console.log("🔥 Architecture Build Completed Successfully.");
 
     } catch (globalError) {
-        // Telemetry interceptor: explicitly dumps the error stack trace to Vercel logs before exiting
         console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
         console.error(globalError);
         process.exit(1);
