@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editorial | Mindset by Choice</title>
     
-    <!-- Design System Architecture (Referencing parent directory) -->
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
 
     <style>
-        /* Editorial Blog Hub Specific Styles */
         .blog-header {
             padding: var(--space-12) 0 var(--space-8) 0;
             border-bottom: var(--border-thin);
@@ -23,24 +21,23 @@
             margin-bottom: var(--space-2);
         }
 
-        /* Article List Architecture */
         .article-list {
             display: flex;
             flex-direction: column;
             margin-bottom: var(--space-16);
         }
 
+        /* Responsive Grid: Sidebar (Image+Meta) | Content */
         .article-item {
             padding: var(--space-6) 0;
             border-bottom: var(--border-dimmed);
             display: grid;
             grid-template-columns: 180px 1fr;
-            gap: var(--space-4);
-            align-items: baseline;
+            gap: var(--space-6);
+            align-items: start;
             transition: padding-left var(--transition-fast), border-color var(--transition-fast);
         }
 
-        /* Hover effect: Subtle indent and highlight border to simulate focus */
         .article-item:hover {
             padding-left: var(--space-2);
             border-bottom: var(--border-thin);
@@ -50,11 +47,48 @@
             border-bottom: var(--border-thin);
         }
 
+        /* Left Column Wrapper */
+        .article-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        /* Strict Minimalist Square Thumbnail */
+        .article-thumbnail {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: var(--border-dimmed);
+            background-color: var(--color-surface);
+            overflow: hidden;
+            transition: border-color var(--transition-fast);
+        }
+
+        .article-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Enforcing pure monochrome regardless of source image */
+            filter: grayscale(100%) contrast(1.1);
+            transition: filter var(--transition-fast), transform var(--transition-fast);
+        }
+
+        /* Interactive effects on hover */
+        .article-item:hover .article-thumbnail {
+            border-color: var(--color-text);
+        }
+
+        .article-item:hover .article-thumbnail img {
+            transform: scale(1.03);
+            filter: grayscale(100%) contrast(1.25); /* Sharpens monochrome on focus */
+        }
+
         .article-meta {
             font-size: var(--text-xs);
             color: var(--color-dimmed);
             text-transform: uppercase;
             letter-spacing: 0.1em;
+            line-height: 1.4;
         }
 
         .article-content h2 {
@@ -81,21 +115,24 @@
             border-color: var(--color-text);
         }
 
-        /* Responsive adjustments for mobile devices */
         @media (max-width: 768px) {
             .article-item {
                 grid-template-columns: 1fr;
-                gap: var(--space-2);
+                gap: var(--space-4);
             }
-            .article-meta {
-                margin-bottom: var(--space-1);
+            .article-sidebar {
+                flex-direction: row;
+                align-items: center;
+                gap: var(--space-4);
+            }
+            .article-thumbnail {
+                width: 80px; /* Small square on mobile */
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Architecture -->
     <header class="brand-header">
         <div class="container flex-between">
             <a href="/" class="brand-logo">Mindset by Choice</a>
@@ -109,26 +146,27 @@
         </div>
     </header>
 
-    <!-- Main Content Layer -->
     <main class="container">
         
-        <!-- Blog Hub Header -->
         <header class="blog-header">
             <h1 class="blog-title">Editorial</h1>
             <p style="color: var(--color-dimmed); max-width: var(--container-reading);">
-                Deep dives into the architecture of focus, self-mastery, and the psychology of high standards. No fluff. Just execution.
+                Deep dives into the architecture of focus, self-mastery, and the psychology of high standards.
             </p>
         </header>
 
-        <!-- Article List -->
         <div class="article-list">
             
-            <!-- Article 01 -->
             <article class="article-item">
-                <aside class="article-meta">
-                    <time datetime="2026-06-10">10 Jun 2026</time>
-                    <div style="margin-top: var(--space-1);">Psychology</div>
-                </aside>
+                <div class="article-sidebar">
+                    <div class="article-thumbnail">
+                        <img src="../assets/images/style-confidence.jpg" alt="Visual architecture of style">
+                    </div>
+                    <aside class="article-meta">
+                        <time datetime="2026-06-10">10 Jun 2026</time>
+                        <div style="color: var(--color-text); margin-top: 2px;">Psychology</div>
+                    </aside>
+                </div>
                 <div class="article-content">
                     <a href="/blog/your-style-is-killing-your-confidence">
                         <h2>Your Style Is Killing Your Confidence</h2>
@@ -140,12 +178,16 @@
                 </div>
             </article>
 
-            <!-- Article 02 -->
             <article class="article-item">
-                <aside class="article-meta">
-                    <time datetime="2026-05-28">28 May 2026</time>
-                    <div style="margin-top: var(--space-1);">Self-Mastery</div>
-                </aside>
+                <div class="article-sidebar">
+                    <div class="article-thumbnail">
+                        <img src="../assets/images/lazy-mechanism.jpg" alt="Shattered momentum concept">
+                    </div>
+                    <aside class="article-meta">
+                        <time datetime="2026-05-28">28 May 2026</time>
+                        <div style="color: var(--color-text); margin-top: 2px;">Self-Mastery</div>
+                    </aside>
+                </div>
                 <div class="article-content">
                     <a href="/blog/7-reasons-you-are-lazy">
                         <h2>7 Reasons You Are Lazy (And How to Fix It)</h2>
@@ -157,36 +199,13 @@
                 </div>
             </article>
 
-            <!-- Article 03 -->
-            <article class="article-item">
-                <aside class="article-meta">
-                    <time datetime="2026-05-15">15 May 2026</time>
-                    <div style="margin-top: var(--space-1);">Execution</div>
-                </aside>
-                <div class="article-content">
-                    <a href="/blog/the-illusion-of-productivity">
-                        <h2>The Illusion of Productivity</h2>
-                    </a>
-                    <p>
-                        Being busy is the ultimate defense mechanism against actually doing the work that moves the needle. Learn to distinguish noise from signal.
-                    </p>
-                    <a href="/blog/the-illusion-of-productivity" class="read-more">Read Full Article</a>
-                </div>
-            </article>
-
         </div>
 
     </main>
 
-    <!-- Footer Layer -->
     <footer class="brand-footer">
         <div class="container">
             <p style="font-size: var(--text-sm); letter-spacing: 0.05em;">&copy; 2026 Mindset by Choice. All rights reserved.</p>
-            <div class="brand-footer-links">
-                <a href="/">Website</a>
-                <a href="https://youtube.com/@MindsetByChoice" target="_blank" rel="noopener">YouTube</a>
-                <a href="https://etsy.com" target="_blank" rel="noopener">Etsy Shop</a>
-            </div>
         </div>
     </footer>
 
