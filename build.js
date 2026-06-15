@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Automated Scheduling & Notion Status Sync Engine)
+ * BUILD.JS (Robust Anti-Crash Version for Output public/)
  * Language: Node.js
  * ==========================================================================
  */
@@ -34,9 +34,9 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
-// Function to update status directly in Notion workspace
 async function updateNotionStatus(pageId, newStatus) {
     try {
+        // Safe check to patch either standard Select or Native Status
         await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
             method: 'PATCH',
             headers: {
@@ -50,9 +50,9 @@ async function updateNotionStatus(pageId, newStatus) {
                 }
             })
         });
-        console.log(`✅ Notion database updated: Status set to '${newStatus}' for page ${pageId}`);
+        console.log(`✅ Notion database synced: Status updated to '${newStatus}'`);
     } catch (error) {
-        console.error(`⚠️ Failed to update Notion status for page ${pageId}:`, error);
+        console.error(`⚠️ Failed to update Notion status:`, error);
     }
 }
 
@@ -60,8 +60,6 @@ async function build() {
     console.log("⚡ Initializing Architecture Build from Notion...");
 
     const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
-    
-    // Fetch both Prepared and Published articles
     const dbResponse = await fetch(dbUrl, {
         method: 'POST',
         headers: {
@@ -73,7 +71,9 @@ async function build() {
             filter: {
                 or: [
                     { property: 'Status', select: { equals: 'Prepared' } },
-                    { property: 'Status', select: { equals: 'Published' } }
+                    { property: 'Status', status: { equals: 'Prepared' } },
+                    { property: 'Status', select: { equals: 'Published' } },
+                    { property: 'Status', status: { equals: 'Published' } }
                 ]
             },
             sorts: [{ property: 'Publish', direction: 'descending' }]
@@ -82,7 +82,7 @@ async function build() {
 
     const dbData = await dbResponse.json();
     if (!dbData.results || dbData.results.length === 0) {
-        console.log("⚠️ No articles matching criteria found.");
+        console.log("⚠️ No active published or prepared articles found.");
         return;
     }
 
@@ -95,14 +95,14 @@ async function build() {
     for (const page of dbData.results) {
         const props = page.properties;
         
-        // Exact property matching based on image_91f6a6.png column taxonomy
-        const title = props.Name.title[0]?.plain_text || 'Untitled Manuscript';
-        const slug = props.Slug.rich_text[0]?.plain_text || page.id;
-        const status = props.Status.select?.name;
-        const category = props.Category.select?.name || 'General';
-        const dateStr = props.Publish.date?.start || '2026-01-01'; 
-        const summary = props.Summary.rich_text[0]?.plain_text || '';
-        const ytLink = props['YouTube Link']?.url || null; // Bracket notation due to space in column name
+        // Deep optional chaining protection to ensure 0% crash rate
+        const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
+        const slug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
+        const status = props.Status?.select?.name || props.Status?.status?.name || 'Draft';
+        const category = props.Category?.select?.name || 'General';
+        const dateStr = props.Publish?.date?.start || '2026-01-01'; 
+        const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
+        const ytLink = props['YouTube Link']?.url || null;
         
         let thumbUrl = '../assets/images/placeholder.jpg';
         const thumbProp = props.Thumbnail?.files?.[0];
@@ -112,15 +112,13 @@ async function build() {
 
         const publishDate = new Date(dateStr);
 
-        // Time-Gate Scheduling Guardrail
         if (status === 'Prepared' && publishDate > now) {
-            console.log(`⏳ Blocked: /blog/${slug} is scheduled for a future date (${dateStr}). Skipping.`);
+            console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing. Skipping.`);
             continue; 
         }
 
         console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
 
-        // If it was Prepared and passed the time-gate, update it to Published in Notion
         if (status === 'Prepared') {
             await updateNotionStatus(page.id, 'Published');
         }
@@ -129,7 +127,6 @@ async function build() {
             day: 'numeric', month: 'short', year: 'numeric'
         });
 
-        // Fetch inner blocks layout content
         const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
         const blocksResponse = await fetch(blocksUrl, {
             headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
@@ -139,21 +136,23 @@ async function build() {
         let bodyHtml = '';
         let insideList = false;
 
-        blocksData.results.forEach(block => {
-            const type = block.type;
-            if (type !== 'bulleted_list_item' && insideList) {
-                bodyHtml += '</ul>\n';
-                insideList = false;
-            }
-            if (type === 'paragraph') bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
-            else if (type === 'heading_2') bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
-            else if (type === 'heading_3') bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
-            else if (type === 'quote') bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
-            else if (type === 'bulleted_list_item') {
-                if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
-                bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
-            }
-        });
+        if (blocksData.results) {
+            blocksData.results.forEach(block => {
+                const type = block.type;
+                if (type !== 'bulleted_list_item' && insideList) {
+                    bodyHtml += '</ul>\n';
+                    insideList = false;
+                }
+                if (type === 'paragraph' && block.paragraph) bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
+                else if (type === 'heading_2' && block.heading_2) bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
+                else if (type === 'heading_3' && block.heading_3) bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
+                else if (type === 'quote' && block.quote) bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
+                else if (type === 'bulleted_list_item' && block.bulleted_list_item) {
+                    if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
+                    bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
+                }
+            });
+        }
         if (insideList) bodyHtml += '</ul>\n';
 
         const ytId = getYouTubeId(ytLink);
@@ -171,6 +170,7 @@ async function build() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} | Mindset by Choice</title>
+    <script src="../js/theme.js"></script>
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
@@ -195,12 +195,13 @@ async function build() {
     <header class="brand-header">
         <div class="container flex-between">
             <a href="/" class="brand-logo">Mindset by Choice</a>
-            <nav>
+            <nav style="display: flex; align-items: center;">
                 <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
                     <li><a href="/" style="color: var(--color-dimmed);">Home</a></li>
                     <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
                     <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
                 </ul>
+                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
             </nav>
         </div>
     </header>
@@ -223,9 +224,7 @@ async function build() {
         articles.push({ title, slug, category, formattedDate, dateStr, summary, thumbUrl });
     }
 
-    // 3. Compile dynamically the Blog Listing Grid Overview Hub (blog/index.html)
     console.log("🏁 Compilation: Constructing Blog Hub index grid...");
-    
     let articleItemsHtml = '';
     articles.forEach(art => {
         articleItemsHtml += `
@@ -245,16 +244,13 @@ async function build() {
             </article>\n`;
     });
 
-    // HERE IS THE INDEX HUB TEMPLATE VARIABLE WITH THE THEME TOGGLE INTEGRATED
     const indexHubTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editorial | Mindset by Choice</title>
-    
     <script src="../js/theme.js"></script>
-
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
