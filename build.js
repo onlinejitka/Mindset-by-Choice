@@ -1,7 +1,7 @@
 /**
  * ==========================================================================
- * BUILD.JS (Premium Editorial Edition with Native Spotify Integration)
- * Language: Node.js
+ * BUILD.JS (Complete Consolidated Production Version - Premium Editorial)
+ * Language: Node.js (Strict Build-Time Compiler via Notion API)
  * ==========================================================================
  */
 
@@ -16,6 +16,7 @@ if (!NOTION_TOKEN || !DATABASE_ID) {
     process.exit(1);
 }
 
+// Extract YouTube Video ID safely from any standard share URL
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -23,15 +24,22 @@ function getYouTubeId(url) {
     return (match && match[2].length === 12) ? match[2] : (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Converts standard Spotify URLs into absolute clean secure embed player frames
+// Inteligentní konvertor Spotify odkazů na čisté embed přehrávače
 function getSpotifyEmbedUrl(url) {
     if (!url) return null;
-    if (url.includes('spotify.com')) {
-        return url.replace('spotify.com/', 'spotify.com/embed/');
+    try {
+        if (url.includes('spotify.com')) {
+            let cleanUrl = url.split('?')[0]; // Odstraní trackovací parametry (?si=...)
+            if (cleanUrl.includes('/embed')) return cleanUrl;
+            return cleanUrl.replace('spotify.com/', 'spotify.com/embed/');
+        }
+    } catch (e) {
+        return null;
     }
     return null;
 }
 
+// Convert Notion Rich Text styling arrays into clean semantic HTML tags
 function parseRichText(richTextArray) {
     if (!richTextArray) return '';
     return richTextArray.map(text => {
@@ -43,6 +51,7 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
+// Auto-patches Notion page status from 'Prepared' to 'Published' upon release
 async function updateNotionStatus(pageId, isNativeStatus) {
     try {
         const propertiesPayload = {};
@@ -61,11 +70,13 @@ async function updateNotionStatus(pageId, isNativeStatus) {
             },
             body: JSON.stringify({ properties: propertiesPayload })
         });
+        if (res.ok) console.log(`✅ Notion database status synced to 'Published'.`);
     } catch (error) {
-        console.error(`⚠️ Notion status patch failed:`, error);
+        console.error(`⚠️ Notion status auto-patch failed:`, error);
     }
 }
 
+// Core Static Site Generation Engine
 async function build() {
     try {
         console.log("⚡ Initializing Architecture Build from Notion...");
@@ -86,8 +97,13 @@ async function build() {
         const dbData = await dbResponse.json();
         
         if (dbData.object === 'error') {
-            console.error(`⛔ Notion API Error: ${dbData.message}`);
+            console.error(`⛔ Notion API Error Code (${dbData.status}): ${dbData.message}`);
             process.exit(1);
+        }
+
+        if (!dbData.results || dbData.results.length === 0) {
+            console.log("⚠️ No entries found in the provided Notion database.");
+            return;
         }
 
         const articles = [];
@@ -103,7 +119,10 @@ async function build() {
             const status = props.Status.select?.name || props.Status.status?.name || 'Draft';
             const isNativeStatus = props.Status.type === 'status';
 
-            if (status !== 'Prepared' && status !== 'Published') continue;
+            // Server-side JS filtering layout logic
+            if (status !== 'Prepared' && status !== 'Published') {
+                continue;
+            }
 
             const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
             let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
@@ -113,7 +132,7 @@ async function build() {
             const dateStr = props.Publish?.date?.start || '2026-01-01'; 
             const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
             const ytLink = props['YouTube Link']?.url || null;
-            const spotifyLink = props['Spotify Link']?.url || null; // New integration link extraction
+            const spotifyLink = props['Spotify Link']?.url || null;
             
             let thumbUrl = '../assets/images/placeholder.jpg';
             const thumbProp = props.Thumbnail?.files?.[0];
@@ -122,9 +141,14 @@ async function build() {
             }
 
             const publishDate = new Date(dateStr);
-            if (status === 'Prepared' && publishDate > now) continue; 
 
-            console.log(`📑 Rendering active article: /blog/${slug}`);
+            // Time-Gate Scheduling Guardrail
+            if (status === 'Prepared' && publishDate > now) {
+                console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
+                continue; 
+            }
+
+            console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
 
             if (status === 'Prepared') {
                 await updateNotionStatus(page.id, isNativeStatus);
@@ -134,36 +158,58 @@ async function build() {
                 day: 'numeric', month: 'short', year: 'numeric'
             });
 
-            // Parsing plátna stránky
+            // --- PART A: COLUMN "TEXT" PROPERTY CELL PARSER ---
+            let columnTextHtml = '';
+            if (props.Text?.rich_text && props.Text.rich_text.length > 0) {
+                const rawColumnText = parseRichText(props.Text.rich_text);
+                
+                columnTextHtml = rawColumnText.split('\n').map(line => {
+                    line = line.trim();
+                    if (!line) return '';
+
+                    if (line.startsWith('## ')) return `<h2>${line.replace('## ', '')}</h2>`;
+                    if (line.startsWith('### ')) return `<h3>${line.replace('### ', '')}</h3>`;
+
+                    const boldLineMatch = line.match(/^<strong>(.*)<\/strong>$/);
+                    if (boldLineMatch && !boldLineMatch[1].includes('</strong>')) {
+                        return `<h2>${boldLineMatch[1]}</h2>`;
+                    }
+                    return `<p>${line}</p>`;
+                }).join('\n');
+            }
+
+            // --- PART B: NOTION CANVAS PAGE BODY BLOCKS PARSER ---
             const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
             const blocksResponse = await fetch(blocksUrl, {
                 headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
             });
             const blocksData = await blocksResponse.json();
 
-            let finalContentHtml = '';
+            let bodyBlocksHtml = '';
             let insideList = false;
 
             if (blocksData.results) {
                 blocksData.results.forEach(block => {
                     const type = block.type;
                     if (type !== 'bulleted_list_item' && insideList) {
-                        finalContentHtml += '</ul>\n';
+                        bodyBlocksHtml += '</ul>\n';
                         insideList = false;
                     }
-                    if (type === 'paragraph' && block.paragraph) finalContentHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
-                    else if (type === 'heading_2' && block.heading_2) finalContentHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
-                    else if (type === 'heading_3' && block.heading_3) finalContentHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
-                    else if (type === 'quote' && block.quote) finalContentHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
+                    if (type === 'paragraph' && block.paragraph) bodyBlocksHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
+                    else if (type === 'heading_2' && block.heading_2) bodyBlocksHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
+                    else if (type === 'heading_3' && block.heading_3) bodyBlocksHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
+                    else if (type === 'quote' && block.quote) bodyBlocksHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
                     else if (type === 'bulleted_list_item' && block.bulleted_list_item) {
-                        if (!insideList) { finalContentHtml += '<ul>\n'; insideList = true; }
-                        finalContentHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
+                        if (!insideList) { bodyBlocksHtml += '<ul>\n'; insideList = true; }
+                        bodyBlocksHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
                     }
                 });
             }
-            if (insideList) finalContentHtml += '</ul>\n';
+            if (insideList) bodyBlocksHtml += '</ul>\n';
 
-            // Media Builders
+            const finalContentHtml = columnTextHtml + bodyBlocksHtml;
+
+            // Media Elements Injection Block
             const ytId = getYouTubeId(ytLink);
             let videoEmbedHtml = '';
             if (ytId) {
@@ -173,7 +219,7 @@ async function build() {
                 </div>`;
             }
 
-           const spotifyEmbedUrl = getSpotifyEmbedUrl(spotifyLink);
+            const spotifyEmbedUrl = getSpotifyEmbedUrl(spotifyLink);
             let spotifyEmbedHtml = '';
             if (spotifyEmbedUrl) {
                 spotifyEmbedHtml = `
@@ -209,8 +255,8 @@ async function build() {
     </header>
     <main class="container container-reading" style="padding-bottom: var(--space-12);">
         <header class="article-header">
-            <a href="/blog" class="back-link">&larr; Return to Editorial</a>
-            <div class="post-meta"><time datetime="${dateStr}">${formattedDate}</time><span>&bull;</span><span>${category}</span></div>
+            <a href="/blog" class="back-link">← Return to Editorial</a>
+            <div class="post-meta"><time datetime="${dateStr}">${formattedDate}</time><span>•</span><span>${category}</span></div>
             <h1 class="post-title">${title}</h1>
         </header>
         <article class="article-body">
@@ -219,7 +265,7 @@ async function build() {
             ${finalContentHtml}
         </article>
         <footer class="article-footer">
-            <a href="/blog" class="back-link">&larr; Back to all articles</a>
+            <a href="/blog" class="back-link">← Back to all articles</a>
             <span style="font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase;">Manuscript Sync Active</span>
         </footer>
     </main>
@@ -260,6 +306,25 @@ async function build() {
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .blog-header { padding: var(--space-12) 0 var(--space-8) 0; border-bottom: var(--border-thin); margin-bottom: var(--space-8); }
+        .blog-title { font-size: var(--text-3xl); margin-bottom: var(--space-2); line-height: 1.35; }
+        .article-list { display: flex; flex-direction: column; margin-bottom: var(--space-16); }
+        .article-item { padding: var(--space-6) 0; border-bottom: var(--border-dimmed); display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); align-items: start; transition: padding-left var(--transition-fast), border-color var(--transition-fast); }
+        .article-item:hover { padding-left: var(--space-2); border-bottom: var(--border-thin); }
+        .article-item:last-child { border-bottom: var(--border-thin); }
+        .article-sidebar { display: flex; flex-direction: column; gap: var(--space-3); }
+        .article-thumbnail { width: 100%; aspect-ratio: 1 / 1; border: var(--border-thin); background-color: var(--color-surface); overflow: hidden; transition: border-color var(--transition-fast); }
+        .article-thumbnail img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); transition: filter var(--transition-fast), transform var(--transition-fast); }
+        .article-item:hover .article-thumbnail { border-color: var(--color-text); }
+        .article-item:hover .article-thumbnail img { transform: scale(1.03); filter: grayscale(100%) contrast(1.25); }
+        .article-meta { font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.4; }
+        .article-content h2 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
+        .article-content p { font-size: var(--text-base); color: var(--color-dimmed); margin-bottom: var(--space-3); max-width: var(--container-reading); }
+        .read-more { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast); }
+        .article-item:hover .read-more { border-color: var(--color-text); }
+        @media (max-width: 768px) { .article-item { grid-template-columns: 1fr; gap: var(--space-4); } .article-sidebar { flex-direction: row; align-items: center; gap: var(--space-4); } .article-thumbnail { width: 80px; } }
+    </style>
 </head>
 <body>
     <header class="brand-header">
