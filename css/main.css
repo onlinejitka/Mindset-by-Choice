@@ -1,0 +1,115 @@
+/* ==========================================================================
+   CSS/MAIN.CSS
+   Core typography, utility classes, and global structure
+   ========================================================================== */
+
+/* Typography Rules */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+h1 { font-size: var(--text-3xl); margin-bottom: var(--space-4); }
+h2 { font-size: var(--text-2xl); margin-bottom: var(--space-3); }
+h3 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
+
+p {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    font-weight: 400;
+}
+
+/* Structural Utility Classes */
+.container {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+}
+
+.container-reading {
+    max-width: var(--container-reading);
+}
+
+.section-spacing {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+}
+
+/* Global Grid / Flexbox Utilities */
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-6);
+}
+
+/* Interactive Elements */
+.btn-primary {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-thin);
+    color: var(--color-text);
+    text-transform: uppercase;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-text);
+    color: var(--color-bg);
+}
+
+/* Shared Brand Header/Footer */
+.brand-header {
+    padding: var(--space-4) 0;
+    border-bottom: var(--border-thin);
+}
+
+.brand-logo {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.brand-footer {
+    padding: var(--space-8) 0;
+    border-top: var(--border-thin);
+    margin-top: auto;
+    text-align: center;
+}
+
+.brand-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.brand-footer-links a {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    color: var(--color-dimmed);
+    transition: color var(--transition-fast);
+}
+
+.brand-footer-links a:hover {
+    color: var(--color-text);
+}
