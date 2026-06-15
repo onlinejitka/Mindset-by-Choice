@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Mindset by Choice</title>
+    <title>5-Day Challenge Dashboard | Mindset by Choice</title>
     
     <script src="/js/theme.js"></script>
 
@@ -11,12 +11,31 @@
     <link rel="stylesheet" href="/css/reset.css">
     <link rel="stylesheet" href="/css/main.css">
     <style>
-        .dashboard-grid { display: grid; grid-template-columns: 240px 1fr; gap: var(--space-8); margin-top: var(--space-6); }
-        .timeline-nav { display: flex; flex-direction: column; gap: var(--space-2); border-right: var(--border-thin); padding-right: var(--space-4); }
-        .timeline-step { padding: var(--space-2) var(--space-3); border: 1px solid transparent; text-align: left; text-transform: uppercase; font-size: var(--text-sm); font-family: var(--font-brand); color: var(--color-dimmed); transition: all var(--transition-fast); }
-        .timeline-step:hover { color: var(--color-text); padding-left: var(--space-4); }
+        .dashboard-grid { display: grid; grid-template-columns: 200px 1fr; gap: var(--space-8); margin-top: var(--space-6); align-items: start; }
+        .timeline-nav { display: flex; flex-direction: column; gap: var(--space-2); border-right: var(--border-thin); padding-right: var(--space-4); position: sticky; top: var(--space-4); }
+        .timeline-step { padding: var(--space-3) var(--space-4); border: 1px solid transparent; text-align: left; text-transform: uppercase; font-size: var(--text-sm); font-family: var(--font-brand); color: var(--color-dimmed); background: none; cursor: pointer; transition: all var(--transition-fast); }
+        .timeline-step:hover { color: var(--color-text); padding-left: calc(var(--space-4) + 4px); }
         .timeline-step.active { border: var(--border-thin); color: var(--color-text); font-weight: 700; background-color: var(--color-surface); }
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .timeline-nav { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: var(--border-thin); padding-right: 0; padding-bottom: var(--space-3); } }
+        
+        .challenge-meta { font-size: var(--text-xs); font-family: var(--font-brand); text-transform: uppercase; color: var(--color-dimmed); letter-spacing: 0.1em; margin-bottom: var(--space-2); }
+        .challenge-title { font-size: var(--text-xl) !important; text-transform: none !important; letter-spacing: -0.02em !important; line-height: 1.2 !important; margin-bottom: var(--space-4) !important; }
+        
+        .video-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border: var(--border-thin); margin: var(--space-4) 0 var(--space-6) 0; }
+        .video-wrapper iframe { width: 100%; height: 100%; border: none; display: block; }
+        
+        .assignment-box { margin-top: var(--space-6); padding-top: var(--space-6); border-top: var(--border-thin); }
+        .assignment-box h2 { font-size: var(--text-sm); color: var(--color-text); letter-spacing: 0.05em; margin-bottom: var(--space-3); }
+        
+        /* Journal Reflection Textarea Style */
+        .journal-box { margin-top: var(--space-8); }
+        .journal-textarea { width: 100%; min-height: 160px; background-color: var(--color-surface); border: var(--border-thin); color: var(--color-text); font-family: var(--font-reading); font-size: var(--text-base); padding: var(--space-3); line-height: 1.6; resize: vertical; margin-top: var(--space-2); margin-bottom: var(--space-3); transition: border-color var(--transition-fast); }
+        .journal-textarea:focus { outline: none; border-color: var(--color-text); }
+        
+        @media (max-width: 768px) { 
+            .dashboard-grid { grid-template-columns: 1fr; gap: var(--space-4); } 
+            .timeline-nav { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: var(--border-thin); padding-right: 0; padding-bottom: var(--space-2); position: relative; top: 0; } 
+            .timeline-step { white-space: nowrap; padding: var(--space-2) var(--space-3); }
+        }
     </style>
 </head>
 <body>
@@ -34,19 +53,42 @@
         </div>
     </header>
 
-    <main class="container" style="flex: 1; padding-bottom: var(--space-12);">
+    <main class="container" style="flex: 1; padding-top: var(--space-8); padding-bottom: var(--space-12);">
         <div class="dashboard-grid">
-            <aside class="timeline-nav">
-                <button class="timeline-step active">Day 01</button>
-                <button class="timeline-step">Day 02</button>
-                <button class="timeline-step">Day 03</button>
-                <button class="timeline-step">Day 04</button>
-                <button class="timeline-step">Day 05</button>
+            
+            <aside class="timeline-nav" id="timeline-navigation">
+                <button class="timeline-step active" onclick="switchDay(1)">Day 01</button>
+                <button class="timeline-step" onclick="switchDay(2)">Day 02</button>
+                <button class="timeline-step" onclick="switchDay(3)">Day 03</button>
+                <button class="timeline-step" onclick="switchDay(4)">Day 04</button>
+                <button class="timeline-step" onclick="switchDay(5)">Day 05</button>
             </aside>
+            
             <section class="challenge-content">
-                <h1 id="challenge-title" style="font-size: var(--text-xl);">Day 01: Initializing Execution</h1>
-                <p style="color: var(--color-dimmed); font-weight: 300;">Welcome to the structural matrix of your attention change.</p>
-                </section>
+                <div class="challenge-meta" id="node-meta">Matrix Sequence · Day 01</div>
+                <h1 class="challenge-title" id="node-title">Loading Challenge Architecture...</h1>
+                
+                <div class="video-wrapper">
+                    <iframe id="node-video" src="" allowfullscreen></iframe>
+                </div>
+
+                <div class="assignment-box">
+                    <h2>[ The Daily Assignment Blueprint ]</h2>
+                    <div id="node-instructions" style="font-family: var(--font-reading); font-weight: 300; line-height: 1.8;">
+                        </div>
+                </div>
+
+                <div class="journal-box">
+                    <div class="flex-between" style="align-items: flex-end;">
+                        <label for="journal-input" style="font-family: var(--font-brand); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em;">[ Digital Reflection Journal ]</label>
+                        <a id="node-workbook" href="#" target="_blank" class="read-more" style="font-size: var(--text-xs); font-family: var(--font-brand);">Download Day 01 Workbook (PDF)</a>
+                    </div>
+                    <textarea id="journal-input" class="journal-textarea" placeholder="Deconstruct your thoughts here... Your entries can be synchronized with your private database architecture."></textarea>
+                    <button class="btn-primary" onclick="syncReflection()" style="font-size: var(--text-xs); padding: var(--space-1) var(--space-3);">Commit Entry & Sync</button>
+                    <span id="sync-status" style="font-family: var(--font-brand); font-size: var(--text-xs); margin-left: var(--space-2); color: var(--color-dimmed);"></span>
+                </div>
+
+            </section>
         </div>
     </main>
 
@@ -61,5 +103,106 @@
             </nav>
         </div>
     </footer>
+
+    <script>
+        // --- 1. DATA MATRIX (Sem vlož své texty a odkazy) ---
+        const challengeMatrix = {
+            1: {
+                title: "Day 01: Raising the Floor and Identifying Leaks",
+                videoId: "dQw4w9WgXcQ", // Dočasné zástupné YouTube ID
+                workbookUrl: "/assets/workbook-day1.pdf", // Cesta k tvému PDF souboru
+                text: `<p>Vítej v prvním dni výzvy. Dnes se zaměříme na koncept <strong>"Zvedání herního dna"</strong>. Většina lidí se soustředí na své cíle a ideální dny, ale tvůj život nedeformuje to, jak vysoko míříš, ale co všechno toleruješ, když jsi na dně.</p>
+                       <p>Analyzuj své energetické úniky. Kde ti utíká pozornost? Kteří lidé nebo digitální zlozvyky tě stahují zpět do komfortní zóny?</p>`
+            },
+            2: {
+                title: "Day 02: Re-architecting Digital Focus",
+                videoId: "dQw4w9WgXcQ",
+                workbookUrl: "/assets/workbook-day2.pdf",
+                text: `<p>Druhý den je věnován nekompromisnímu pročištění tvého digitálního prostředí. Tvůj telefon a notifikace jsou navrženy tak, aby parazitovaly na tvém dopaminu.</p>
+                       <p>Nastavíme striktní bariéry, které ti umožní přejít z reaktivního módu (odpovídání na podněty zvenčí) do proaktivního tvůrčího nastavení.</p>`
+            },
+            3: {
+                title: "Day 03: Designing High-Octane Routines",
+                videoId: "dQw4w9WgXcQ",
+                workbookUrl: "/assets/workbook-day3.pdf",
+                text: `<p>Záměry bez infrastruktury jsou pouhé halucinace. Dnes vybudujeme ranní a večerní kotvy, které nevyžadují motivaci ani pevnou vůli.</p>
+                       <p>Cílem je vytvořit automatizované rituály, které tě ochrání před rozhodovací únavou hned na začátku dne.</p>`
+            },
+            4: {
+                title: "Day 04: The Sovereignty of Attention",
+                videoId: "dQw4w9WgXcQ",
+                workbookUrl: "/assets/workbook-day4.pdf",
+                text: `<p>Čtvrtý den se podíváme na hlubokou práci (Deep Work). Schopnost udržet pozornost na jedné komplexní věci po dobu 90 minut je dnes superschopností, která tě okamžitě oddělí od 95 % trhu.</p>
+                       <p>Naučíme se eliminovat interní vyrušení a zvládat nutkání přepínat mezi záložkami prohlížeče.</p>`
+            },
+            5: {
+                title: "Day 05: Permanent Integration and Systems",
+                videoId: "dQw4w9WgXcQ",
+                workbookUrl: "/assets/workbook-day5.pdf",
+                text: `<p>Závěrečný den výzvy. Výzva nekončí, ale přetavuje se v permanentní životní systém. Podíváme se na to, jak dlouhodobě sledovat svůj progres bez syndromu vyhoření.</p>
+                       <p>Zhodnotíš své zápisky z uplynulých dní a ukotvíš svou novou osobní identitu architekta vlastní reality.</p>`
+            }
+        };
+
+        let currentActiveDay = 1;
+
+        // --- 2. RENDERING ENGINE ---
+        function renderChallengeDay(dayNumber) {
+            const data = challengeMatrix[dayNumber];
+            if (!data) return;
+
+            currentActiveDay = dayNumber;
+
+            // Update DOM Nodes
+            document.getElementById('node-meta').textContent = `Matrix Sequence · Day 0${dayNumber}`;
+            document.getElementById('node-title').textContent = data.title;
+            document.getElementById('node-video').src = `https://www.youtube.com/embed/${data.videoId}?rel=0&modestbranding=1`;
+            document.getElementById('node-instructions').innerHTML = data.text;
+            
+            const workbookLink = document.getElementById('node-workbook');
+            workbookLink.href = data.workbookUrl;
+            workbookLink.textContent = `Download Day 0${dayNumber} Workbook (PDF)`;
+
+            // Retrieve saved text from local memory if available
+            const savedNote = localStorage.getItem(`mindset_challenge_day_${dayNumber}`) || '';
+            document.getElementById('journal-input').value = savedNote;
+            document.getElementById('sync-status').textContent = savedNote ? "(Saved in browser memory)" : "";
+        }
+
+        // --- 3. NAVIGATION CONTROLLER ---
+        function switchDay(dayNumber) {
+            // Remove active states
+            const buttons = document.querySelectorAll('.timeline-step');
+            buttons.forEach((btn, index) => {
+                if (index === (dayNumber - 1)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // Re-render
+            renderChallengeDay(dayNumber);
+        }
+
+        // --- 4. INTERACTIVE JOURNAL SYNC LOGIC ---
+        function syncReflection() {
+            const textContent = document.getElementById('journal-input').value;
+            const statusNode = document.getElementById('sync-status');
+            
+            statusNode.textContent = "Saving...";
+
+            // Save locally immediately to prevent data loss
+            localStorage.setItem(`mindset_challenge_day_${currentActiveDay}`, textContent);
+
+            // Local simulation response (Make.com integration will attach here)
+            setTimeout(() => {
+                statusNode.textContent = "✓ Local Sync Secure. Ready for Notion Webhook Export.";
+                statusNode.style.color = "var(--color-dimmed)";
+            }, 600);
+        }
+
+        // Bootstrap App on load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChallengeDay(1);
+        });
+    </script>
 </body>
 </html>
