@@ -138,3 +138,73 @@ ul, ol {
 .journal-textarea {
     font-family: var(--font-reading) !important;
 }
+
+
+/* ==========================================================================
+   PRODUCTION ARTICLE LAYOUT ARCHITECTURE
+   ========================================================================== */
+
+.article-header { 
+    padding-top: var(--space-12); 
+    padding-bottom: var(--space-4); 
+    border-bottom: var(--border-thin); 
+    margin-bottom: var(--space-8); 
+}
+
+.post-title { 
+    font-size: var(--text-2xl); 
+    line-height: 1.15; 
+    letter-spacing: -0.03em; 
+    text-transform: none; /* Keeps titles raw and organic */
+    margin-top: var(--space-2);
+}
+
+/* Master paragraph rhythm */
+.article-body p {
+    font-family: var(--font-reading);
+    font-size: var(--text-base);
+    font-weight: 300; /* Lighter weight for supreme digital layout look */
+    line-height: 1.9;   /* Massive breathing room for focus */
+    color: var(--color-text);
+    margin-bottom: var(--space-4);
+}
+
+/* Ultra-Modern Chapter Headings (e.g. PART I: THE HIDDEN LEAKS) */
+.article-body h2 {
+    font-size: var(--text-xl);
+    font-family: var(--font-brand);
+    color: var(--color-text);
+    margin-top: var(--space-12) !important; /* Forces massive space BEFORE a new section */
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-1);
+}
+
+/* Stunning Minimalist Editorial Blockquotes (Centered & Cinematic) */
+.article-body blockquote {
+    margin: var(--space-8) auto !important;
+    max-width: 85%;
+    text-align: center;
+    border-left: none !important; /* Removes the ugly old left bar */
+    padding: 0 !important;
+    position: relative;
+}
+
+.article-body blockquote p {
+    font-family: var(--font-reading);
+    font-size: var(--text-lg) !important;
+    line-height: 1.6 !important;
+    font-style: italic;
+    color: var(--color-text);
+    opacity: 0.85;
+}
+
+/* Small spacing line helper */
+.article-body blockquote::before {
+    content: "—";
+    display: block;
+    margin-bottom: var(--space-2);
+    color: var(--color-dimmed);
+    font-family: var(--font-brand);
+}
