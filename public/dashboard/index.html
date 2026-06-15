@@ -22,167 +22,58 @@
         }
 
         /* --- OVERVIEW VIEW STYLES --- */
-        .overview-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: var(--space-8);
-            padding: var(--space-8) 0 var(--space-12) 0;
-        }
-        .overview-meta {
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: var(--space-4);
-        }
-        .overview-title {
-            font-family: var(--font-serif);
-            font-size: var(--text-4xl);
-            line-height: 1.1;
-            font-weight: 400;
-            text-transform: none;
-            letter-spacing: -0.02em;
-        }
-        .overview-desc {
-            font-family: var(--font-serif);
-            font-size: var(--text-lg);
-            color: var(--color-dimmed);
-            line-height: 1.6;
-            margin-bottom: var(--space-4);
-        }
-        .btn-black {
-            display: inline-block;
-            background: var(--color-text);
-            color: var(--color-bg);
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: var(--space-2) var(--space-4);
-            text-decoration: none;
-            transition: opacity var(--transition-fast);
-        }
+        .overview-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-8); padding: var(--space-8) 0 var(--space-12) 0; }
+        .overview-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: var(--space-4); }
+        .overview-title { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1.1; font-weight: 400; text-transform: none; letter-spacing: -0.02em; }
+        .overview-desc { font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-dimmed); line-height: 1.6; margin-bottom: var(--space-4); }
+        .btn-black { display: inline-block; background: var(--color-text); color: var(--color-bg); font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-2) var(--space-4); text-decoration: none; transition: opacity var(--transition-fast); border: none; cursor: pointer; }
         .btn-black:hover { opacity: 0.8; }
 
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            border-top: var(--border-thin);
-            border-bottom: var(--border-thin);
-            padding: var(--space-2) 0;
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--color-dimmed);
-            margin-bottom: var(--space-4);
-        }
+        .list-header { display: flex; justify-content: space-between; border-top: var(--border-thin); border-bottom: var(--border-thin); padding: var(--space-2) 0; font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-dimmed); margin-bottom: var(--space-4); }
 
-        .day-row {
-            display: flex;
-            align-items: center;
-            padding: var(--space-4) 0;
-            border-bottom: var(--border-thin);
-            cursor: pointer;
-            transition: padding-left var(--transition-fast);
-        }
-        .day-row:not(.locked):hover {
-            padding-left: var(--space-2);
-        }
-        .day-row.locked {
-            opacity: 0.35;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .row-num {
-            width: 80px;
-            font-family: var(--font-brand);
-            font-size: var(--text-sm);
-            color: var(--color-dimmed);
-        }
+        .day-row { display: flex; align-items: center; padding: var(--space-4) 0; border-bottom: var(--border-thin); cursor: pointer; transition: padding-left var(--transition-fast); }
+        .day-row:not(.locked):hover { padding-left: var(--space-2); }
+        .day-row.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+        .row-num { width: 80px; font-family: var(--font-brand); font-size: var(--text-sm); color: var(--color-dimmed); }
         .row-content { flex: 1; }
-        .row-meta {
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: var(--space-1);
-        }
-        .row-title {
-            font-family: var(--font-serif);
-            font-size: var(--text-2xl);
-            font-weight: 400;
-        }
-        .row-status {
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-        }
+        .row-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: var(--space-1); }
+        .row-title { font-family: var(--font-serif); font-size: var(--text-2xl); font-weight: 400; }
+        .row-status { font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.15em; }
 
-        /* --- DAY DETAIL VIEW STYLES --- */
-        .day-back {
-            display: inline-block;
-            font-family: var(--font-brand);
-            font-size: var(--text-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--color-dimmed);
-            cursor: pointer;
-            margin-bottom: var(--space-8);
-            border: none;
-            background: none;
-        }
+        /* --- DAY DETAIL EDITORIAL LAYOUT --- */
+        .day-back { display: inline-block; font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dimmed); cursor: pointer; margin-bottom: var(--space-8); border: none; background: none; }
         .day-back:hover { color: var(--color-text); }
         
-        .detail-meta {
-            font-family: var(--font-brand);
-            font-size: var(--text-sm);
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: var(--space-2);
-        }
-        .detail-title {
-            font-family: var(--font-serif);
-            font-size: var(--text-3xl);
-            font-weight: 400;
-            margin-bottom: var(--space-6);
-            letter-spacing: -0.02em;
-            text-transform: none;
-        }
+        .day-header-grid { display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); border-bottom: var(--border-thin); padding-bottom: var(--space-6); margin-bottom: var(--space-6); align-items: end; }
+        .dh-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; line-height: 1.6; }
+        .dh-title { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1; font-weight: 400; margin-bottom: -6px; }
+
+        .audio-section { border-bottom: var(--border-thin); padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
+        .a-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; }
+        .a-title { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 400; margin-top: var(--space-4); margin-bottom: var(--space-4); }
+        .audio-ui { display: flex; align-items: center; gap: var(--space-4); }
+        .play-btn { width: 48px; height: 48px; border: var(--border-thin); background: transparent; color: var(--color-text); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .play-btn::after { content: "▶"; margin-left: 2px; font-size: 0.8rem; }
+        .progress-bar { flex: 1; height: 16px; background: var(--color-surface); position: relative; }
+        .progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 2%; background: var(--color-text); }
+
+        .content-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); border-bottom: var(--border-thin); padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
+        .reflection-col { border-right: var(--border-thin); padding-right: var(--space-8); }
+        .section-label { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-6); }
         
-        /* Audio Player Placeholder */
-        .audio-player {
-            border: var(--border-thin);
-            padding: var(--space-3) var(--space-4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-8);
-            background: var(--color-surface);
-        }
-        .audio-left .a-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); margin-bottom: 4px; }
-        .audio-left .a-title { font-family: var(--font-reading); font-size: var(--text-sm); }
-        .audio-right { font-family: var(--font-brand); font-size: var(--text-sm); display: flex; align-items: center; gap: var(--space-2); }
+        .drop-cap-text { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.9; color: var(--color-text); font-weight: 300; }
+        .drop-cap-text::first-letter { font-family: var(--font-serif); font-size: 4rem; float: left; line-height: 0.8; padding-right: var(--space-2); padding-top: var(--space-1); color: var(--color-text); }
+
+        .action-intro, .action-outro { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.9; color: var(--color-text); font-weight: 300; margin-bottom: var(--space-6); }
         
-        .section-title {
-            font-family: var(--font-serif);
-            font-size: var(--text-xl);
-            font-weight: 400;
-            margin-bottom: var(--space-3);
-            text-transform: none;
-            border-bottom: 1px solid transparent;
-        }
-        
-        .step-block { display: flex; gap: var(--space-4); margin-bottom: var(--space-3); }
-        .step-num { font-family: var(--font-brand); font-size: var(--text-sm); color: var(--color-dimmed); padding-top: 4px; }
-        .step-text { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.8; color: var(--color-text); }
-        
-        .journal-textarea { width: 100%; min-height: 180px; background-color: var(--color-surface); border: var(--border-thin); color: var(--color-text); font-family: var(--font-reading); font-size: var(--text-base); padding: var(--space-3); line-height: 1.6; resize: vertical; margin-top: var(--space-2); margin-bottom: var(--space-4); }
+        .step-block { display: grid; grid-template-columns: 24px 1fr; gap: var(--space-3); margin-bottom: var(--space-4); align-items: start; }
+        .step-num { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); margin-top: 5px; }
+        .step-text { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.8; color: var(--color-text); font-weight: 300; }
+
+        .journal-split { display: grid; grid-template-columns: 200px 1fr; gap: var(--space-8); }
+        .journal-prompt { font-family: var(--font-serif); font-size: 2.5rem; line-height: 1.1; margin-top: var(--space-4); margin-bottom: var(--space-4); }
+        .journal-sub { font-family: var(--font-reading); font-size: var(--text-xs); color: var(--color-dimmed); }
+        .journal-textarea { width: 100%; min-height: 160px; background: transparent; border: var(--border-thin); color: var(--color-text); font-family: var(--font-reading); font-size: var(--text-base); padding: var(--space-4); line-height: 1.6; resize: vertical; margin-bottom: var(--space-4); transition: border-color var(--transition-fast); }
         .journal-textarea:focus { outline: none; border-color: var(--color-text); }
 
         @media (max-width: 768px) {
@@ -190,7 +81,11 @@
             .overview-title { font-size: var(--text-3xl); }
             .row-num { width: 40px; }
             .row-title { font-size: var(--text-xl); }
-            .audio-player { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+            .day-header-grid { grid-template-columns: 1fr; gap: var(--space-3); }
+            .dh-title { font-size: 3rem; }
+            .content-split { grid-template-columns: 1fr; border-right: none; padding-right: 0; }
+            .reflection-col { border-right: none; padding-right: 0; border-bottom: var(--border-thin); padding-bottom: var(--space-8); }
+            .journal-split { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -212,7 +107,7 @@
     <main class="container" style="flex: 1; padding-bottom: var(--space-12);">
         
         <!-- ==========================================
-             VIEW 1: OVERVIEW LIST (Matches Screenshot)
+             VIEW 1: OVERVIEW LIST
              ========================================== -->
         <div id="view-overview">
             <div class="overview-header">
@@ -237,39 +132,64 @@
         </div>
 
         <!-- ==========================================
-             VIEW 2: DAY DETAIL (Interactive)
+             VIEW 2: DAY DETAIL (High-End Editorial Layout)
              ========================================== -->
-        <div id="view-day" style="display: none; max-width: var(--container-reading); margin: 0 auto; padding-top: var(--space-8);">
+        <div id="view-day" style="display: none; padding-top: var(--space-8);">
             <button class="day-back" onclick="closeDay()">← Back to Overview</button>
             
-            <div class="detail-meta">Day <span id="d-num">01</span> / 05 &nbsp;·&nbsp; <span id="d-meta">THE FOUNDATION</span></div>
-            <h1 class="detail-title" id="d-title">Mindful Breathing</h1>
-
-            <div class="audio-player">
-                <div class="audio-left">
-                    <div class="a-meta">AUDITORY REALIGNMENT</div>
-                    <div class="a-title" id="d-audio-title">Day 1 Auditory Realignment — Introduction to Breath</div>
+            <!-- HEADER -->
+            <div class="day-header-grid">
+                <div class="dh-meta">
+                    Day <span id="d-num">01</span> / 05<br>
+                    <span id="d-meta">THE FOUNDATION</span>
                 </div>
-                <div class="audio-right">
-                    <span>▶</span> 00:00 / <span id="d-audio-time">05:00</span>
+                <h1 class="dh-title" id="d-title">Mindful Breathing</h1>
+            </div>
+
+            <!-- AUDIO PLAYER SECTION -->
+            <div class="audio-section">
+                <div class="flex-between">
+                    <div class="a-meta">AUDITORY REALIGNMENT</div>
+                    <div class="a-meta">00:00 / <span id="d-audio-time">05:00</span></div>
+                </div>
+                <div class="a-title" id="d-audio-title">Day 1 Auditory Realignment — Introduction to Breath</div>
+                <div class="audio-ui">
+                    <button class="play-btn"></button>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
                 </div>
             </div>
 
-            <h2 class="section-title">Reflection</h2>
-            <p id="d-reflection"></p>
+            <!-- DUAL COLUMN CONTENT -->
+            <div class="content-split">
+                <!-- Left: Reflection -->
+                <div class="reflection-col">
+                    <div class="section-label">— REFLECTION</div>
+                    <div id="d-reflection" class="drop-cap-text"></div>
+                </div>
+                
+                <!-- Right: Action -->
+                <div class="action-col">
+                    <div class="section-label">— ACTION</div>
+                    <div id="d-action-intro" class="action-intro"></div>
+                    <div id="d-steps"></div>
+                    <div id="d-action-outro" class="action-outro"></div>
+                </div>
+            </div>
 
-            <h2 class="section-title" style="margin-top: var(--space-6);">Action</h2>
-            <p id="d-action-intro" style="margin-bottom: var(--space-4);"></p>
-            <div id="d-steps"></div>
-            <p id="d-action-outro" style="margin-top: var(--space-4);"></p>
-
-            <h2 class="section-title" style="margin-top: var(--space-8);">The Journal</h2>
-            <p style="font-family: var(--font-reading); color: var(--color-dimmed); margin-bottom: var(--space-2);">Share your experience. How did you feel after the session?</p>
-            <textarea id="d-journal" class="journal-textarea" placeholder="Start typing here..."></textarea>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <button class="btn-black" onclick="saveAndComplete()" style="cursor: pointer; border: none;">Save & Complete Day</button>
-                <span id="sync-status" style="font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed);"></span>
+            <!-- JOURNAL SECTION -->
+            <div class="journal-split">
+                <div class="journal-meta-col">
+                    <div class="section-label">THE JOURNAL</div>
+                    <div class="journal-prompt">Share your<br><em style="font-style: italic;">experience.</em></div>
+                    <div class="journal-sub">How did you feel after the session?</div>
+                </div>
+                <div class="journal-input-col">
+                    <textarea id="d-journal" class="journal-textarea" placeholder="Begin writing..."></textarea>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <button class="btn-black" onclick="saveAndComplete()">Save & Complete Day</button>
+                        <span id="sync-status" style="font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed);"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -288,10 +208,9 @@
     </footer>
 
     <!-- ==========================================================================
-         DASHBOARD LOGIC & DATA INJECTION
+         DASHBOARD LOGIC & DATA
          ========================================================================== -->
     <script>
-        // --- 1. CONTENT DATA MATRIX ---
         const challengeData = {
             1: {
                 meta: "The Foundation",
@@ -369,23 +288,18 @@
             }
         };
 
-        // --- 2. STATE MANAGEMENT ---
         let currentDayOpen = 1;
         let completedDays = JSON.parse(localStorage.getItem('mindset_completed_days')) || [];
 
-        // --- 3. RENDERING THE OVERVIEW LIST ---
         function renderOverview() {
             const listContainer = document.getElementById('days-list-container');
             listContainer.innerHTML = '';
             
-            // Progress Text
             document.getElementById('progress-text').textContent = `${completedDays.length} / 5 COMPLETE`;
 
             for (let i = 1; i <= 5; i++) {
                 const data = challengeData[i];
                 const isComplete = completedDays.includes(i);
-                
-                // Logic: Day is unlocked if previous day is complete, or if it's Day 1
                 const isUnlocked = i === 1 || completedDays.includes(i - 1);
                 
                 let statusText = '🔒 LOCKED';
@@ -400,7 +314,6 @@
                     statusText = 'BEGIN —';
                     rowClass = 'day-row';
                     onClickAttr = `onclick="openDay(${i})"`;
-                    // Make the active "Begin" text stand out slightly
                     statusText = `<span style="color: var(--color-text); font-weight: bold;">${statusText}</span>`;
                 }
 
@@ -418,21 +331,20 @@
             }
         }
 
-        // --- 4. OPENING A SPECIFIC DAY ---
         function openDay(dayId) {
             currentDayOpen = dayId;
             const data = challengeData[dayId];
 
-            // Populate text
             document.getElementById('d-num').textContent = `0${dayId}`;
             document.getElementById('d-meta').textContent = data.meta;
             document.getElementById('d-title').textContent = data.title;
             document.getElementById('d-audio-title').textContent = data.audioTitle;
             document.getElementById('d-audio-time').textContent = data.audioTime;
             document.getElementById('d-reflection').textContent = data.reflection;
-            document.getElementById('d-action-intro').textContent = data.actionIntro;
             
-            // Populate Steps
+            document.getElementById('d-action-intro').textContent = data.actionIntro;
+            document.getElementById('d-action-outro').textContent = data.actionOutro;
+            
             const stepsContainer = document.getElementById('d-steps');
             stepsContainer.innerHTML = '';
             data.steps.forEach((stepText, index) => {
@@ -444,14 +356,10 @@
                 `);
             });
 
-            document.getElementById('d-action-outro').textContent = data.actionOutro;
-
-            // Load Journal
             const savedNote = localStorage.getItem(`mindset_journal_day_${dayId}`) || '';
             document.getElementById('d-journal').value = savedNote;
             document.getElementById('sync-status').textContent = '';
 
-            // Switch Views
             document.getElementById('view-overview').style.display = 'none';
             document.getElementById('view-day').style.display = 'block';
             window.scrollTo(0, 0);
@@ -464,31 +372,20 @@
             window.scrollTo(0, 0);
         }
 
-        // --- 5. SAVING & COMPLETING ---
         function saveAndComplete() {
             const journalText = document.getElementById('d-journal').value;
-            
-            // Save Journal Entry
             localStorage.setItem(`mindset_journal_day_${currentDayOpen}`, journalText);
             
-            // Mark Day as Complete
             if (!completedDays.includes(currentDayOpen)) {
                 completedDays.push(currentDayOpen);
                 localStorage.setItem('mindset_completed_days', JSON.stringify(completedDays));
             }
 
             document.getElementById('sync-status').textContent = "Saving... Day marked complete.";
-            
-            // Return to overview after short delay
-            setTimeout(() => {
-                closeDay();
-            }, 800);
+            setTimeout(() => { closeDay(); }, 800);
         }
 
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', () => {
-            renderOverview();
-        });
+        document.addEventListener('DOMContentLoaded', () => { renderOverview(); });
     </script>
 </body>
 </html>
