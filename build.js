@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Dual-Text Engine: Parses both Column Property & Page Body Blocks)
+ * BUILD.JS (Smart Heading Interceptor Edition)
  * Language: Node.js
  * ==========================================================================
  */
@@ -100,7 +100,6 @@ async function build() {
             const status = props.Status.select?.name || props.Status.status?.name || 'Draft';
             const isNativeStatus = props.Status.type === 'status';
 
-            // JS-side Filtering
             if (status !== 'Prepared' && status !== 'Published') {
                 continue;
             }
@@ -137,12 +136,28 @@ async function build() {
                 day: 'numeric', month: 'short', year: 'numeric'
             });
 
-            // --- PART A: PARSING TEXT FROM THE "TEXT" COLUMN PROPERTY ---
+            // --- PART A: PARSING TEXT FROM THE "TEXT" COLUMN PROPERTY With Smart Heading Interceptor ---
             let columnTextHtml = '';
             if (props.Text?.rich_text && props.Text.rich_text.length > 0) {
                 const rawColumnText = parseRichText(props.Text.rich_text);
-                // Split text by newlines into clean semantic paragraphs
-                columnTextHtml = rawColumnText.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('\n');
+                
+                columnTextHtml = rawColumnText.split('\n').map(line => {
+                    line = line.trim();
+                    if (!line) return '';
+
+                    // 1. Check for standard Markdown formatting overrides
+                    if (line.startsWith('## ')) return `<h2>${line.replace('## ', '')}</h2>`;
+                    if (line.startsWith('### ')) return `<h3>${line.replace('### ', '')}</h3>`;
+
+                    // 2. Elite Interceptor: If the line is 100% bolded, transform it into a formal structural H2 heading
+                    const boldLineMatch = line.match(/^<strong>(.*)<\/strong>$/);
+                    if (boldLineMatch && !boldLineMatch[1].includes('</strong>')) {
+                        return `<h2>${boldLineMatch[1]}</h2>`;
+                    }
+
+                    // Default fallback to standard legible paragraph
+                    return `<p>${line}</p>`;
+                }).join('\n');
             }
 
             // --- PART B: PARSING TEXT FROM THE ACTUAL PAGE BODY PLÁTNO ---
@@ -174,7 +189,6 @@ async function build() {
             }
             if (insideList) bodyBlocksHtml += '</ul>\n';
 
-            // Combining both text sources seamlessly
             const finalContentHtml = columnTextHtml + bodyBlocksHtml;
 
             const ytId = getYouTubeId(ytLink);
@@ -323,14 +337,14 @@ async function build() {
 </body>
 </html>`;
 
-    fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
-    console.log("🔥 Architecture Build Completed Successfully.");
+        fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
+        console.log("🔥 Architecture Build Completed Successfully.");
 
-} catch (globalError) {
-    console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
-    console.error(globalError);
-    process.exit(1);
-}
+    } catch (globalError) {
+        console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
+        console.error(globalError);
+        process.exit(1);
+    }
 }
 
 build();
