@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindset by Choice | The Architecture of Focus</title>
+    
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        /* Page specific editorial layout rules */
+        .hero-section {
+            padding: var(--space-16) 0 var(--space-12) 0;
+            border-bottom: var(--border-thin);
+        }
+        
+        .hero-title {
+            font-size: calc(var(--text-4xl) * 0.8);
+            line-height: 1.1;
+            max-width: 800px;
+            margin-bottom: var(--space-6);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: var(--text-2xl);
+            }
+        }
+
+        .motto-banner {
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--color-dimmed);
+            margin-bottom: var(--space-4);
+        }
+
+        .manifesto-grid {
+            border-bottom: var(--border-thin);
+        }
+
+        .manifesto-cell {
+            padding: var(--space-8) var(--space-4);
+            border-right: var(--border-thin);
+        }
+
+        .manifesto-cell:last-child {
+            border-right: none;
+        }
+
+        @media (max-width: 768px) {
+            .manifesto-cell {
+                border-right: none;
+                border-bottom: var(--border-thin);
+            }
+            .manifesto-cell:last-child {
+                border-bottom: none;
+            }
+        }
+
+        /* Companion Workbook Callout Box */
+        .workbook-container {
+            border: var(--border-thin);
+            padding: var(--space-8);
+            margin: var(--space-12) 0;
+            text-align: center;
+        }
+
+        .workbook-meta {
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-dimmed);
+            margin-bottom: var(--space-2);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="brand-header">
+        <div class="container flex-between">
+            <a href="/" class="brand-logo">Mindset by Choice</a>
+            <nav>
+                <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
+                    <li><a href="/" style="border-bottom: var(--border-thin);">Home</a></li>
+                    <li><a href="/blog" style="color: var(--color-dimmed);">Blog</a></li>
+                    <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="hero-section">
+            <div class="motto-banner">Control the noise.</div>
+            <h1 class="hero-title">The Architecture of Focus. Settle for nothing less than absolute clarity.</h1>
+            <p class="container-reading" style="color: var(--color-dimmed); font-size: var(--text-lg);">
+                A premium digital ecosystem designed to eliminate cognitive overload, rebuild internal standards, and reclaim total sovereignty over your attention.
+            </p>
+        </section>
+
+        <section class="grid-2 manifesto-grid">
+            <div class="manifesto-cell">
+                <h3>01 / The Core Blueprint</h3>
+                <p style="color: var(--color-dimmed); font-size: var(--text-sm); margin-top: var(--space-2);">
+                    We do not build templates. We build systems. Learn the psychological feedback loops required to dismantle mental ruts and install effortless daily momentum.
+                </p>
+                <a href="/blog" class="btn-primary" style="margin-top: var(--space-2);">Read Articles</a>
+            </div>
+            <div class="manifesto-cell">
+                <h3>02 / The Interactive Reset</h3>
+                <p style="color: var(--color-dimmed); font-size: var(--text-sm); margin-top: var(--space-2);">
+                    Experience zero-friction training. Access our signature 5-Day Mindfulness Challenge. No sign-ups, no tracking, no noise. Pure execution dashboard.
+                </p>
+                <a href="/dashboard" class="btn-primary" style="margin-top: var(--space-2);">Enter Dashboard</a>
+            </div>
+        </section>
+
+        <section class="workbook-container">
+            <div class="workbook-meta">Exclusive Blueprint Release</div>
+            <h2>Companion Architecture Workbook</h2>
+            <p class="container-reading" style="margin: var(--space-3) auto var(--space-4) auto; color: var(--color-dimmed);">
+                A high-end minimal physical-digital template designed to accompany your focus transition. Synchronized with the 5-Day challenge framework. Available for immediate execution.
+            </p>
+            <a href="assets/docs/workbook.pdf" download class="btn-primary">
+                Download Workbook (PDF)
+            </a>
+        </section>
+
+    </main>
+
+    <footer class="brand-footer">
+        <div class="container">
+            <p style="font-size: var(--text-sm); letter-spacing: 0.05em;">&copy; 2026 Mindset by Choice. All rights reserved.</p>
+            
+            <p style="font-size: var(--text-xs); color: var(--color-dimmed); margin-top: var(--space-1);">
+                Jitka Pekárková &bull; Primátorská 38, Prague &bull; IČO: 87458021
+            </p>
+
+            <div class="brand-footer-links">
+                <a href="/">Website</a>
+                <a href="https://youtube.com/@MindsetByChoice" target="_blank" rel="noopener">YouTube</a>
+                <a href="https://etsy.com" target="_blank" rel="noopener">Etsy Shop</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
