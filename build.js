@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Production Grade - Auto-Sanitization & Strict Error Logging)
+ * BUILD.JS (Telemetry Edition - Global Try/Catch Wrapper)
  * Language: Node.js
  * ==========================================================================
  */
@@ -12,7 +12,7 @@ const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
 if (!NOTION_TOKEN || !DATABASE_ID) {
-    console.error("⛔ Error: NOTION_TOKEN or NOTION_DATABASE_ID is missing.");
+    console.error("⛔ Error: NOTION_TOKEN or NOTION_DATABASE_ID is missing in Vercel Environment Variables.");
     process.exit(1);
 }
 
@@ -54,124 +54,123 @@ async function updateNotionStatus(pageId, newStatus) {
 }
 
 async function build() {
-    console.log("⚡ Initializing Architecture Build from Notion...");
+    // Wrapping the entire execution in a safe cage to print debugging logs on crash
+    try {
+        console.log("⚡ Initializing Architecture Build from Notion...");
 
-    const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
-    const dbResponse = await fetch(dbUrl, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${NOTION_TOKEN}`,
-            'Notion-Version': '2022-06-28',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            filter: {
-                or: [
-                    { property: 'Status', select: { equals: 'Prepared' } },
-                    { property: 'Status', status: { equals: 'Prepared' } },
-                    { property: 'Status', select: { equals: 'Published' } },
-                    { property: 'Status', status: { equals: 'Published' } }
-                ]
+        const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
+        const dbResponse = await fetch(dbUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${NOTION_TOKEN}`,
+                'Notion-Version': '2022-06-28',
+                'Content-Type': 'application/json'
             },
-            sorts: [{ property: 'Publish', direction: 'descending' }]
-        })
-    });
-
-    const dbData = await dbResponse.json();
-    
-    // Strict Error Checking for Notion API
-    if (dbData.object === 'error') {
-        console.error(`⛔ Notion API Error (${dbData.status}): ${dbData.message}`);
-        process.exit(1); // Fails the Vercel build visibly so you can check logs
-    }
-
-    if (!dbData.results || dbData.results.length === 0) {
-        console.log("⚠️ No active published or prepared articles found in Notion database.");
-        return;
-    }
-
-    const articles = [];
-    const blogDir = path.join(__dirname, 'public', 'blog');
-    if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
-
-    const now = new Date();
-
-    for (const page of dbData.results) {
-        const props = page.properties;
-        
-        const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
-        let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
-        
-        // AUTOMATIC SLUG SANITIZATION: Converts spaces to dashes, removes bad characters, lowercases
-        const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-        
-        const status = props.Status?.select?.name || props.Status?.status?.name || 'Draft';
-        const category = props.Category?.select?.name || 'General';
-        const dateStr = props.Publish?.date?.start || '2026-01-01'; 
-        const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
-        const ytLink = props['YouTube Link']?.url || null;
-        
-        let thumbUrl = '../assets/images/placeholder.jpg';
-        const thumbProp = props.Thumbnail?.files?.[0];
-        if (thumbProp) {
-            thumbUrl = thumbProp.type === 'file' ? thumbProp.file.url : thumbProp.external.url;
-        }
-
-        const publishDate = new Date(dateStr);
-
-        if (status === 'Prepared' && publishDate > now) {
-            console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
-            continue; 
-        }
-
-        console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
-
-        if (status === 'Prepared') {
-            await updateNotionStatus(page.id, 'Published');
-        }
-
-        const formattedDate = publishDate.toLocaleDateString('en-US', {
-            day: 'numeric', month: 'short', year: 'numeric'
+            body: JSON.stringify({
+                filter: {
+                    or: [
+                        { property: 'Status', select: { equals: 'Prepared' } },
+                        { property: 'Status', status: { equals: 'Prepared' } },
+                        { property: 'Status', select: { equals: 'Published' } },
+                        { property: 'Status', status: { equals: 'Published' } }
+                    ]
+                },
+                sorts: [{ property: 'Publish', direction: 'descending' }]
+            }	)
         });
 
-        const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
-        const blocksResponse = await fetch(blocksUrl, {
-            headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
-        });
-        const blocksData = await blocksResponse.json();
+        const dbData = await dbResponse.json();
+        
+        if (dbData.object === 'error') {
+            console.error(`⛔ Notion API Error Code (${dbData.status}): ${dbData.message}`);
+            process.exit(1);
+        }
 
-        let bodyHtml = '';
-        let insideList = false;
+        if (!dbData.results || dbData.results.length === 0) {
+            console.log("⚠️ No active published or prepared articles found in Notion database.");
+            return;
+        }
 
-        if (blocksData.results) {
-            blocksData.results.forEach(block => {
-                const type = block.type;
-                if (type !== 'bulleted_list_item' && insideList) {
-                    bodyHtml += '</ul>\n';
-                    insideList = false;
-                }
-                if (type === 'paragraph' && block.paragraph) bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
-                else if (type === 'heading_2' && block.heading_2) bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
-                else if (type === 'heading_3' && block.heading_3) bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
-                else if (type === 'quote' && block.quote) bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
-                else if (type === 'bulleted_list_item' && block.bulleted_list_item) {
-                    if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
-                    bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
-                }
+        const articles = [];
+        const blogDir = path.join(__dirname, 'public', 'blog');
+        if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
+
+        const now = new Date();
+
+        for (const page of dbData.results) {
+            const props = page.properties;
+            
+            const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
+            let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
+            const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+            
+            const status = props.Status?.select?.name || props.Status?.status?.name || 'Draft';
+            const category = props.Category?.select?.name || 'General';
+            const dateStr = props.Publish?.date?.start || '2026-01-01'; 
+            const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
+            const ytLink = props['YouTube Link']?.url || null;
+            
+            let thumbUrl = '../assets/images/placeholder.jpg';
+            const thumbProp = props.Thumbnail?.files?.[0];
+            if (thumbProp) {
+                thumbUrl = thumbProp.type === 'file' ? thumbProp.file.url : thumbProp.external.url;
+            }
+
+            const publishDate = new Date(dateStr);
+
+            if (status === 'Prepared' && publishDate > now) {
+                console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
+                continue; 
+            }
+
+            console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
+
+            if (status === 'Prepared') {
+                await updateNotionStatus(page.id, 'Published');
+            }
+
+            const formattedDate = publishDate.toLocaleDateString('en-US', {
+                day: 'numeric', month: 'short', year: 'numeric'
             });
-        }
-        if (insideList) bodyHtml += '</ul>\n';
 
-        const ytId = getYouTubeId(ytLink);
-        let videoEmbedHtml = '';
-        if (ytId) {
-            videoEmbedHtml = `
-            <div style="width: 100%; aspect-ratio: 16/9; border: var(--border-thin); margin: var(--space-6) 0; background: #000;">
-                <iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" width="100%" height="100%" allowfullscreen style="border:none; display:block;"></iframe>
-            </div>`;
-        }
+            const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
+            const blocksResponse = await fetch(blocksUrl, {
+                headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
+            });
+            const blocksData = await blocksResponse.json();
 
-        const articleTemplate = `<!DOCTYPE html>
+            let bodyHtml = '';
+            let insideList = false;
+
+            if (blocksData.results) {
+                blocksData.results.forEach(block => {
+                    const type = block.type;
+                    if (type !== 'bulleted_list_item' && insideList) {
+                        bodyHtml += '</ul>\n';
+                        insideList = false;
+                    }
+                    if (type === 'paragraph' && block.paragraph) bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
+                    else if (type === 'heading_2' && block.heading_2) bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
+                    else if (type === 'heading_3' && block.heading_3) bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
+                    else if (type === 'quote' && block.quote) bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
+                    else if (type === 'bulleted_list_item' && block.bulleted_list_item) {
+                        if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
+                        bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
+                    }
+                });
+            }
+            if (insideList) bodyHtml += '</ul>\n';
+
+            const ytId = getYouTubeId(ytLink);
+            let videoEmbedHtml = '';
+            if (ytId) {
+                videoEmbedHtml = `
+                <div style="width: 100%; aspect-ratio: 16/9; border: var(--border-thin); margin: var(--space-6) 0; background: #000;">
+                    <iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" width="100%" height="100%" allowfullscreen style="border:none; display:block;"></iframe>
+                </div>`;
+            }
+
+            const articleTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -227,31 +226,31 @@ async function build() {
 </body>
 </html>`;
 
-        fs.writeFileSync(path.join(blogDir, `${slug}.html`), articleTemplate);
-        articles.push({ title, slug, category, formattedDate, dateStr, summary, thumbUrl });
-    }
+            fs.writeFileSync(path.join(blogDir, `${slug}.html`), articleTemplate);
+            articles.push({ title, slug, category, formattedDate, dateStr, summary, thumbUrl });
+        }
 
-    console.log("🏁 Compilation: Constructing Blog Hub index grid...");
-    let articleItemsHtml = '';
-    articles.forEach(art => {
-        articleItemsHtml += `
-            <article class="article-item">
-                <div class="article-sidebar">
-                    <div class="article-thumbnail"><img src="${art.thumbUrl}" alt="${art.title}"></div>
-                    <aside class="article-meta">
-                        <time datetime="${art.dateStr}">${art.formattedDate}</time>
-                        <div style="color: var(--color-text); margin-top: 2px;">${art.category}</div>
-                    </aside>
-                </div>
-                <div class="article-content">
-                    <a href="/blog/${art.slug}"><h2>${art.title}</h2></a>
-                    <p>${art.summary}</p>
-                    <a href="/blog/${art.slug}" class="read-more">Read Full Article</a>
-                </div>
-            </article>\n`;
-    });
+        console.log("🏁 Compilation: Constructing Blog Hub index grid...");
+        let articleItemsHtml = '';
+        articles.forEach(art => {
+            articleItemsHtml += `
+                <article class="article-item">
+                    <div class="article-sidebar">
+                        <div class="article-thumbnail"><img src="${art.thumbUrl}" alt="${art.title}"></div>
+                        <aside class="article-meta">
+                            <time datetime="${art.dateStr}">${art.formattedDate}</time>
+                            <div style="color: var(--color-text); margin-top: 2px;">${art.category}</div>
+                        </aside>
+                    </div>
+                    <div class="article-content">
+                        <a href="/blog/${art.slug}"><h2>${art.title}</h2></a>
+                        <p>${art.summary}</p>
+                        <a href="/blog/${art.slug}" class="read-more">Read Full Article</a>
+                    </div>
+                </article>\n`;
+        });
 
-    const indexHubTemplate = `<!DOCTYPE html>
+        const indexHubTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -305,8 +304,15 @@ async function build() {
 </body>
 </html>`;
 
-    fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
-    console.log("🔥 Architecture Build Completed Successfully.");
+        fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
+        console.log("🔥 Architecture Build Completed Successfully.");
+
+    } catch (globalError) {
+        // Telemetry interceptor: explicitly dumps the error stack trace to Vercel logs before exiting
+        console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
+        console.error(globalError);
+        process.exit(1);
+    }
 }
 
 build();
