@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | 5-Day Mindfulness Challenge</title>
     
-    <!-- Design System Architecture -->
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
+    
+    <script src="https://www.youtube.com/iframe_api" defer></script>
+    <script src="../js/app.js" defer></script>
 
     <style>
-        /* Dashboard Container Layout */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -22,287 +23,123 @@
         }
 
         @media (max-width: 900px) {
-            .dashboard-layout {
-                grid-template-columns: 1fr;
-                gap: var(--space-6);
-            }
+            .dashboard-layout { grid-template-columns: 1fr; gap: var(--space-6); }
         }
 
-        /* -------------------------------------
-           Left Column: The Master Checklist
-           ------------------------------------- */
-        .checklist-panel {
-            border-right: var(--border-thin);
-            padding-right: var(--space-6);
-        }
-
+        /* Left Column: Checklist */
+        .checklist-panel { border-right: var(--border-thin); padding-right: var(--space-6); }
         @media (max-width: 900px) {
-            .checklist-panel {
-                border-right: none;
-                border-bottom: var(--border-thin);
-                padding-right: 0;
-                padding-bottom: var(--space-6);
-            }
+            .checklist-panel { border-right: none; border-bottom: var(--border-thin); padding-right: 0; padding-bottom: var(--space-6); }
         }
 
-        .checklist-title {
-            font-size: var(--text-lg);
-            margin-bottom: var(--space-4);
-            letter-spacing: 0.05em;
-        }
+        .checklist-title { font-size: var(--text-lg); margin-bottom: var(--space-4); letter-spacing: 0.05em; }
+        .day-item { display: flex; align-items: center; padding: var(--space-3) 0; border-bottom: var(--border-dimmed); cursor: pointer; transition: color var(--transition-fast); color: var(--color-dimmed); user-select: none; }
+        .day-item:last-child { border-bottom: none; }
+        .day-item:hover:not(.locked) { color: var(--color-text); }
+        .day-item.active { color: var(--color-text); font-weight: 700; }
+        .day-item.completed { color: var(--color-text); }
+        .day-item.locked { opacity: 0.4; cursor: not-allowed; }
+        .status-indicator { width: 14px; height: 14px; border: 1px solid currentColor; margin-right: var(--space-3); display: flex; align-items: center; justify-content: center; }
+        .day-item.completed .status-indicator::after { content: '✓'; font-size: 10px; }
+        .day-item.locked .status-indicator { border: 1px dashed currentColor; }
 
-        .day-item {
+        /* Right Column: Workspace */
+        .workspace-panel { display: flex; flex-direction: column; }
+        .workspace-header { margin-bottom: var(--space-4); }
+        .workspace-title { font-size: var(--text-2xl); margin-bottom: var(--space-1); }
+        .workspace-subtitle { font-size: var(--text-sm); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* Media Mode Switcher (Audio / Video Toggle) */
+        .mode-switcher {
             display: flex;
-            align-items: center;
-            padding: var(--space-3) 0;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
             border-bottom: var(--border-dimmed);
-            cursor: pointer;
-            transition: color var(--transition-fast);
+            padding-bottom: var(--space-2);
+        }
+
+        .mode-btn {
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--color-dimmed);
-            user-select: none;
+            transition: color var(--transition-fast);
         }
 
-        .day-item:last-child {
-            border-bottom: none;
-        }
-
-        .day-item:hover:not(.locked) {
-            color: var(--color-text);
-        }
-
-        /* States: Active, Completed, Locked */
-        .day-item.active {
+        .mode-btn.active {
             color: var(--color-text);
             font-weight: 700;
         }
 
-        .day-item.completed {
-            color: var(--color-text);
-        }
-
-        .day-item.locked {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .status-indicator {
-            width: 14px;
-            height: 14px;
-            border: 1px solid currentColor;
-            margin-right: var(--space-3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Checkmark icon for completed states */
-        .day-item.completed .status-indicator::after {
-            content: '✓';
-            font-size: 10px;
-        }
-        
-        .day-item.locked .status-indicator {
-            border: 1px dashed currentColor;
-        }
-
-        /* -------------------------------------
-           Right Column: The Daily Workspace
-           ------------------------------------- */
-        .workspace-panel {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .workspace-header {
+        /* Media Containers */
+        .media-container {
             margin-bottom: var(--space-6);
         }
-        
-        .workspace-title {
-            font-size: var(--text-2xl);
-            margin-bottom: var(--space-1);
-        }
 
-        .workspace-subtitle {
-            font-size: var(--text-sm);
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* Custom Audio Player & Waveform */
+        /* Custom Audio Player Style */
         .audio-module {
             display: flex;
             align-items: center;
             gap: var(--space-6);
             padding: var(--space-6);
             border: var(--border-thin);
-            margin-bottom: var(--space-6);
-        }
-
-        .play-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: var(--border-thin);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color var(--transition-fast), color var(--transition-fast);
-            position: relative;
-            z-index: 2;
             background: var(--color-bg);
         }
 
-        .play-button:hover {
-            background-color: var(--color-text);
-            color: var(--color-bg);
+        .play-button {
+            width: 60px; height: 60px; border-radius: 50%; border: var(--border-thin);
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color var(--transition-fast), color var(--transition-fast);
+            position: relative; z-index: 2; background: var(--color-bg);
         }
-
-        /* The Play Icon (Triangle) */
-        .play-icon {
-            width: 0; 
-            height: 0; 
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 12px solid currentColor;
-            margin-left: 4px;
-        }
-
-        /* The Pause Icon (Two bars) */
-        .pause-icon {
-            display: none;
-            width: 12px;
-            height: 12px;
-            border-left: 4px solid currentColor;
-            border-right: 4px solid currentColor;
-        }
-
+        .play-button:hover { background-color: var(--color-text); color: var(--color-bg); }
+        .play-icon { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid currentColor; margin-left: 4px; }
+        .pause-icon { display: none; width: 12px; height: 12px; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
         .is-playing .play-icon { display: none; }
         .is-playing .pause-icon { display: block; }
 
-        /* The Pulsing Ring Waveform */
-        .waveform-container {
-            position: relative;
-            width: 60px;
-            height: 60px;
+        .waveform-container { position: relative; width: 60px; height: 60px; }
+        .waveform-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--color-text); opacity: 0; z-index: 1; }
+        .is-playing .waveform-ring { animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1); }
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        .audio-controls { flex-grow: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+        .progress-bar-container { width: 100%; height: 2px; background-color: var(--color-surface); cursor: pointer; position: relative; }
+        .progress-fill { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--color-text); width: 0%; }
+        .time-display { font-size: var(--text-xs); color: var(--color-dimmed); display: flex; justify-content: space-between; }
+
+        /* Video Module (YouTube Embed) */
+        .video-module {
+            display: none; /* Controlled by JS */
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: var(--border-thin);
+            background: #000;
         }
 
-        .waveform-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .video-module iframe {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            border: 1px solid var(--color-text);
-            opacity: 0;
-            z-index: 1;
-            transform: scale(1);
+            border: none;
         }
 
-        /* Animation class added via JS when playing */
-        .is-playing .waveform-ring {
-            animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
-        }
-
-        @keyframes pulse-ring {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.6); opacity: 0; }
-        }
-
-        /* Audio Progress and Time */
-        .audio-controls {
-            flex-grow: 1;
+        /* Reflection Journal */
+        .journal-module {
             display: flex;
             flex-direction: column;
             gap: var(--space-2);
         }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 2px;
-            background-color: var(--color-surface);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .progress-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background-color: var(--color-text);
-            width: 0%; /* Updated via JS */
-        }
-
-        .time-display {
-            font-size: var(--text-xs);
-            color: var(--color-dimmed);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Synchronized Subtitles Container */
-        .caption-container {
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--space-6);
-        }
-
-        .caption-text {
-            font-size: var(--text-lg);
-            font-style: italic;
-            color: var(--color-text);
-            transition: opacity var(--transition-fast);
-        }
-
-        /* Interactive Reflection Journal */
-        .journal-module {
-            margin-top: auto; /* Pushes to bottom */
-        }
-
-        .journal-label {
-            font-size: var(--text-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--color-dimmed);
-            margin-bottom: var(--space-2);
-            display: block;
-        }
-
+        .journal-label { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dimmed); }
         .journal-textarea {
-            width: 100%;
-            min-height: 200px;
-            background: transparent;
-            color: var(--color-text);
-            font-size: var(--text-base);
-            line-height: 2; /* Important for dashed line alignment */
-            resize: vertical;
-            padding: var(--space-2) 0;
-            /* Creates the premium dashed lined paper effect */
-            background-image: linear-gradient(transparent, transparent calc(2rem - 1px), var(--color-dimmed) calc(2rem - 1px), var(--color-dimmed) 2rem);
-            background-size: 100% 2rem;
+            width: 100%; min-height: 240px; background: transparent; color: var(--color-text); font-size: var(--text-base); line-height: 2; resize: vertical; padding: var(--space-2) 0;
+            background-image: linear-gradient(transparent, transparent calc(2rem - 1px), var(--color-dimmed) calc(2rem - 1px), var(--color-dimmed) 2rem); background-size: 100% 2rem;
         }
-
-        .journal-textarea:focus {
-            outline: none;
-            background-image: linear-gradient(transparent, transparent calc(2rem - 1px), var(--color-text) calc(2rem - 1px), var(--color-text) 2rem);
-        }
-
-        .action-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: var(--space-4);
-        }
+        .journal-textarea:focus { outline: none; background-image: linear-gradient(transparent, transparent calc(2rem - 1px), var(--color-text) calc(2rem - 1px), var(--color-text) 2rem); }
+        .action-row { display: flex; justify-content: flex-end; margin-top: var(--space-4); }
     </style>
-
-<script src="../js/app.js" defer></script>
-    
 </head>
 <body>
 
-    <!-- Header Architecture -->
     <header class="brand-header">
         <div class="container flex-between">
             <a href="/" class="brand-logo">Mindset by Choice</a>
@@ -316,81 +153,60 @@
         </div>
     </header>
 
-    <!-- Main Dashboard Layer -->
     <main class="container">
-        
         <div class="dashboard-layout">
             
-            <!-- Left Column: Master Checklist -->
             <aside class="checklist-panel">
                 <h2 class="checklist-title">Protocol Track</h2>
                 <nav id="day-navigation">
-                    <!-- Data attributes will guide the JS logic -->
-                    <div class="day-item completed" data-day="1">
-                        <div class="status-indicator"></div>
-                        <span>Day 01 / Audit</span>
-                    </div>
-                    <div class="day-item active" data-day="2">
-                        <div class="status-indicator"></div>
-                        <span>Day 02 / Silence</span>
-                    </div>
-                    <div class="day-item" data-day="3">
-                        <div class="status-indicator"></div>
-                        <span>Day 03 / Tension</span>
-                    </div>
-                    <div class="day-item locked" data-day="4">
-                        <div class="status-indicator"></div>
-                        <span>Day 04 / Structure</span>
-                    </div>
-                    <div class="day-item locked" data-day="5">
-                        <div class="status-indicator"></div>
-                        <span>Day 05 / Execution</span>
-                    </div>
+                    <div class="day-item active" data-day="1"><div class="status-indicator"></div><span>Day 01</span></div>
+                    <div class="day-item locked" data-day="2"><div class="status-indicator"></div><span>Day 02</span></div>
+                    <div class="day-item locked" data-day="3"><div class="status-indicator"></div><span>Day 03</span></div>
+                    <div class="day-item locked" data-day="4"><div class="status-indicator"></div><span>Day 04</span></div>
+                    <div class="day-item locked" data-day="5"><div class="status-indicator"></div><span>Day 05</span></div>
                 </nav>
             </aside>
 
-            <!-- Right Column: Workspace Area -->
             <section class="workspace-panel">
-                
                 <header class="workspace-header">
-                    <div class="workspace-subtitle" id="ui-day-label">Day 02</div>
-                    <h1 class="workspace-title" id="ui-day-title">The Power of Silence</h1>
+                    <div class="workspace-subtitle" id="ui-day-label">Day 01</div>
+                    <h1 class="workspace-title" id="ui-day-title">Loading Protocol...</h1>
                 </header>
 
-                <!-- Audio Module -->
-                <div class="audio-module">
-                    <div class="waveform-container" id="player-container">
-                        <div class="waveform-ring"></div>
-                        <button class="play-button" id="play-btn" aria-label="Play Audio">
-                            <div class="play-icon"></div>
-                            <div class="pause-icon"></div>
-                        </button>
-                    </div>
-                    
-                    <div class="audio-controls">
-                        <div class="progress-bar-container" id="progress-container">
-                            <div class="progress-fill" id="progress-fill"></div>
-                        </div>
-                        <div class="time-display">
-                            <span id="time-current">0:00</span>
-                            <span id="time-total">4:12</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Hidden HTML5 Audio Element -->
-                    <audio id="audio-element" src="../assets/audio/day2.mp3" preload="metadata"></audio>
+                <div class="mode-switcher">
+                    <button class="mode-btn active" id="mode-audio-btn">[ Audio Protocol ]</button>
+                    <button class="mode-btn" id="mode-video-btn">[ Video Protocol ]</button>
                 </div>
 
-                <!-- Subtitles / Captions -->
-                <div class="caption-container">
-                    <p class="caption-text" id="caption-display">"Silence is not the absence of noise. It is the presence of focus."</p>
+                <div class="media-container">
+                    <div class="audio-module" id="audio-view">
+                        <div class="waveform-container" id="player-container">
+                            <div class="waveform-ring"></div>
+                            <button class="play-button" id="play-btn" aria-label="Play Audio">
+                                <div class="play-icon"></div>
+                                <div class="pause-icon"></div>
+                            </button>
+                        </div>
+                        <div class="audio-controls">
+                            <div class="progress-bar-container" id="progress-container">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="time-display">
+                                <span id="time-current">0:00</span>
+                                <span id="time-total">0:00</span>
+                            </div>
+                        </div>
+                        <audio id="audio-element" preload="metadata"></audio>
+                    </div>
+
+                    <div class="video-module" id="video-view">
+                        <div id="yt-player"></div>
+                    </div>
                 </div>
 
-                <!-- Reflection Journal -->
                 <div class="journal-module">
-                    <label for="journal-entry" class="journal-label">Reflection Journal / Local Data</label>
-                    <textarea id="journal-entry" class="journal-textarea" placeholder="Record your observations here. Data is saved locally in your browser..."></textarea>
-                    
+                    <span class="journal-label">Reflection Journal / Local Data</span>
+                    <textarea id="journal-entry" class="journal-textarea" placeholder="Record your observations here..."></textarea>
                     <div class="action-row">
                         <button class="btn-primary" id="mark-complete-btn">Mark Day Complete</button>
                     </div>
@@ -398,15 +214,7 @@
 
             </section>
         </div>
-
     </main>
-
-    <!-- Footer Layer -->
-    <footer class="brand-footer">
-        <div class="container">
-            <p style="font-size: var(--text-sm); letter-spacing: 0.05em;">&copy; 2026 Mindset by Choice. All rights reserved.</p>
-        </div>
-    </footer>
 
 </body>
 </html>
