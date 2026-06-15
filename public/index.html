@@ -81,17 +81,18 @@
 <body>
 
     <header class="brand-header">
-        <div class="container flex-between">
-            <a href="/" class="brand-logo">Mindset by Choice</a>
-            <nav>
-                <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
-                    <li><a href="/" style="border-bottom: var(--border-thin);">Home</a></li>
-                    <li><a href="/blog" style="color: var(--color-dimmed);">Blog</a></li>
-                    <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div class="container flex-between">
+        <a href="/" class="brand-logo">Mindset by Choice</a>
+        <nav style="display: flex; align-items: center;">
+            <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+            <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
+        </nav>
+    </div>
+</header>
 
     <main class="container">
         
