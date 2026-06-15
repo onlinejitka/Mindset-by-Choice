@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editorial | Mindset by Choice</title>
+    
+    <!-- Design System Architecture (Referencing parent directory) -->
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/main.css">
+
+    <style>
+        /* Editorial Blog Hub Specific Styles */
+        .blog-header {
+            padding: var(--space-12) 0 var(--space-8) 0;
+            border-bottom: var(--border-thin);
+            margin-bottom: var(--space-8);
+        }
+
+        .blog-title {
+            font-size: var(--text-3xl);
+            margin-bottom: var(--space-2);
+        }
+
+        /* Article List Architecture */
+        .article-list {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: var(--space-16);
+        }
+
+        .article-item {
+            padding: var(--space-6) 0;
+            border-bottom: var(--border-dimmed);
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: var(--space-4);
+            align-items: baseline;
+            transition: padding-left var(--transition-fast), border-color var(--transition-fast);
+        }
+
+        /* Hover effect: Subtle indent and highlight border to simulate focus */
+        .article-item:hover {
+            padding-left: var(--space-2);
+            border-bottom: var(--border-thin);
+        }
+
+        .article-item:last-child {
+            border-bottom: var(--border-thin);
+        }
+
+        .article-meta {
+            font-size: var(--text-xs);
+            color: var(--color-dimmed);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .article-content h2 {
+            font-size: var(--text-xl);
+            margin-bottom: var(--space-2);
+        }
+
+        .article-content p {
+            font-size: var(--text-base);
+            color: var(--color-dimmed);
+            margin-bottom: var(--space-3);
+            max-width: var(--container-reading);
+        }
+
+        .read-more {
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid transparent;
+            transition: border-color var(--transition-fast);
+        }
+
+        .article-item:hover .read-more {
+            border-color: var(--color-text);
+        }
+
+        /* Responsive adjustments for mobile devices */
+        @media (max-width: 768px) {
+            .article-item {
+                grid-template-columns: 1fr;
+                gap: var(--space-2);
+            }
+            .article-meta {
+                margin-bottom: var(--space-1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Architecture -->
+    <header class="brand-header">
+        <div class="container flex-between">
+            <a href="/" class="brand-logo">Mindset by Choice</a>
+            <nav>
+                <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
+                    <li><a href="/" style="color: var(--color-dimmed);">Home</a></li>
+                    <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
+                    <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Layer -->
+    <main class="container">
+        
+        <!-- Blog Hub Header -->
+        <header class="blog-header">
+            <h1 class="blog-title">Editorial</h1>
+            <p style="color: var(--color-dimmed); max-width: var(--container-reading);">
+                Deep dives into the architecture of focus, self-mastery, and the psychology of high standards. No fluff. Just execution.
+            </p>
+        </header>
+
+        <!-- Article List -->
+        <div class="article-list">
+            
+            <!-- Article 01 -->
+            <article class="article-item">
+                <aside class="article-meta">
+                    <time datetime="2026-06-10">10 Jun 2026</time>
+                    <div style="margin-top: var(--space-1);">Psychology</div>
+                </aside>
+                <div class="article-content">
+                    <a href="/blog/your-style-is-killing-your-confidence">
+                        <h2>Your Style Is Killing Your Confidence</h2>
+                    </a>
+                    <p>
+                        The physical representation of your internal state dictates how the world perceives your boundaries. It is time to audit your aesthetic.
+                    </p>
+                    <a href="/blog/your-style-is-killing-your-confidence" class="read-more">Read Full Article</a>
+                </div>
+            </article>
+
+            <!-- Article 02 -->
+            <article class="article-item">
+                <aside class="article-meta">
+                    <time datetime="2026-05-28">28 May 2026</time>
+                    <div style="margin-top: var(--space-1);">Self-Mastery</div>
+                </aside>
+                <div class="article-content">
+                    <a href="/blog/7-reasons-you-are-lazy">
+                        <h2>7 Reasons You Are Lazy (And How to Fix It)</h2>
+                    </a>
+                    <p>
+                        Laziness is not a personality trait; it is a symptom of a broken dopaminergic feedback loop. Here is the exact protocol to rebuild your drive.
+                    </p>
+                    <a href="/blog/7-reasons-you-are-lazy" class="read-more">Read Full Article</a>
+                </div>
+            </article>
+
+            <!-- Article 03 -->
+            <article class="article-item">
+                <aside class="article-meta">
+                    <time datetime="2026-05-15">15 May 2026</time>
+                    <div style="margin-top: var(--space-1);">Execution</div>
+                </aside>
+                <div class="article-content">
+                    <a href="/blog/the-illusion-of-productivity">
+                        <h2>The Illusion of Productivity</h2>
+                    </a>
+                    <p>
+                        Being busy is the ultimate defense mechanism against actually doing the work that moves the needle. Learn to distinguish noise from signal.
+                    </p>
+                    <a href="/blog/the-illusion-of-productivity" class="read-more">Read Full Article</a>
+                </div>
+            </article>
+
+        </div>
+
+    </main>
+
+    <!-- Footer Layer -->
+    <footer class="brand-footer">
+        <div class="container">
+            <p style="font-size: var(--text-sm); letter-spacing: 0.05em;">&copy; 2026 Mindset by Choice. All rights reserved.</p>
+            <div class="brand-footer-links">
+                <a href="/">Website</a>
+                <a href="https://youtube.com/@MindsetByChoice" target="_blank" rel="noopener">YouTube</a>
+                <a href="https://etsy.com" target="_blank" rel="noopener">Etsy Shop</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
