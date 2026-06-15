@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Complete Consolidated Production Version - Premium Editorial)
+ * BUILD.JS (Absolute Paths Edition - Zero 404 Blunder)
  * Language: Node.js (Strict Build-Time Compiler via Notion API)
  * ==========================================================================
  */
@@ -16,7 +16,6 @@ if (!NOTION_TOKEN || !DATABASE_ID) {
     process.exit(1);
 }
 
-// Extract YouTube Video ID safely from any standard share URL
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -24,14 +23,16 @@ function getYouTubeId(url) {
     return (match && match[2].length === 12) ? match[2] : (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Inteligentní konvertor Spotify odkazů na čisté embed přehrávače
 function getSpotifyEmbedUrl(url) {
     if (!url) return null;
     try {
         if (url.includes('spotify.com')) {
-            let cleanUrl = url.split('?')[0]; // Odstraní trackovací parametry (?si=...)
+            let cleanUrl = url.split('?')[0];
             if (cleanUrl.includes('/embed')) return cleanUrl;
-            return cleanUrl.replace('spotify.com/', 'spotify.com/embed/');
+            return cleanUrl.replace('spotify.com/track/', 'spotify.com/embed/track/')
+                           .replace('spotify.com/episode/', 'spotify.com/embed/episode/')
+                           .replace('spotify.com/show/', 'spotify.com/embed/show/')
+                           .replace('spotify.com/playlist/', 'spotify.com/embed/playlist/');
         }
     } catch (e) {
         return null;
@@ -39,7 +40,6 @@ function getSpotifyEmbedUrl(url) {
     return null;
 }
 
-// Convert Notion Rich Text styling arrays into clean semantic HTML tags
 function parseRichText(richTextArray) {
     if (!richTextArray) return '';
     return richTextArray.map(text => {
@@ -51,7 +51,6 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
-// Auto-patches Notion page status from 'Prepared' to 'Published' upon release
 async function updateNotionStatus(pageId, isNativeStatus) {
     try {
         const propertiesPayload = {};
@@ -61,7 +60,7 @@ async function updateNotionStatus(pageId, isNativeStatus) {
             propertiesPayload['Status'] = { select: { name: 'Published' } };
         }
 
-        const res = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+        await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${NOTION_TOKEN}`,
@@ -70,13 +69,12 @@ async function updateNotionStatus(pageId, isNativeStatus) {
             },
             body: JSON.stringify({ properties: propertiesPayload })
         });
-        if (res.ok) console.log(`✅ Notion database status synced to 'Published'.`);
+        console.log(`✅ Notion database status synced to 'Published'.`);
     } catch (error) {
         console.error(`⚠️ Notion status auto-patch failed:`, error);
     }
 }
 
-// Core Static Site Generation Engine
 async function build() {
     try {
         console.log("⚡ Initializing Architecture Build from Notion...");
@@ -119,10 +117,7 @@ async function build() {
             const status = props.Status.select?.name || props.Status.status?.name || 'Draft';
             const isNativeStatus = props.Status.type === 'status';
 
-            // Server-side JS filtering layout logic
-            if (status !== 'Prepared' && status !== 'Published') {
-                continue;
-            }
+            if (status !== 'Prepared' && status !== 'Published') continue;
 
             const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
             let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
@@ -134,19 +129,14 @@ async function build() {
             const ytLink = props['YouTube Link']?.url || null;
             const spotifyLink = props['Spotify Link']?.url || null;
             
-            let thumbUrl = '../assets/images/placeholder.jpg';
+            let thumbUrl = '/assets/images/placeholder.jpg'; // Fixed to Absolute Root path
             const thumbProp = props.Thumbnail?.files?.[0];
             if (thumbProp) {
                 thumbUrl = thumbProp.type === 'file' ? thumbProp.file.url : thumbProp.external.url;
             }
 
             const publishDate = new Date(dateStr);
-
-            // Time-Gate Scheduling Guardrail
-            if (status === 'Prepared' && publishDate > now) {
-                console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
-                continue; 
-            }
+            if (status === 'Prepared' && publishDate > now) continue; 
 
             console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
 
@@ -158,18 +148,14 @@ async function build() {
                 day: 'numeric', month: 'short', year: 'numeric'
             });
 
-            // --- PART A: COLUMN "TEXT" PROPERTY CELL PARSER ---
             let columnTextHtml = '';
             if (props.Text?.rich_text && props.Text.rich_text.length > 0) {
                 const rawColumnText = parseRichText(props.Text.rich_text);
-                
                 columnTextHtml = rawColumnText.split('\n').map(line => {
                     line = line.trim();
                     if (!line) return '';
-
                     if (line.startsWith('## ')) return `<h2>${line.replace('## ', '')}</h2>`;
                     if (line.startsWith('### ')) return `<h3>${line.replace('### ', '')}</h3>`;
-
                     const boldLineMatch = line.match(/^<strong>(.*)<\/strong>$/);
                     if (boldLineMatch && !boldLineMatch[1].includes('</strong>')) {
                         return `<h2>${boldLineMatch[1]}</h2>`;
@@ -178,7 +164,6 @@ async function build() {
                 }).join('\n');
             }
 
-            // --- PART B: NOTION CANVAS PAGE BODY BLOCKS PARSER ---
             const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
             const blocksResponse = await fetch(blocksUrl, {
                 headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
@@ -209,7 +194,6 @@ async function build() {
 
             const finalContentHtml = columnTextHtml + bodyBlocksHtml;
 
-            // Media Elements Injection Block
             const ytId = getYouTubeId(ytLink);
             let videoEmbedHtml = '';
             if (ytId) {
@@ -234,10 +218,10 @@ async function build() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} | Mindset by Choice</title>
-    <script src="../js/theme.js"></script>
-    <link rel="stylesheet" href="../css/variables.css">
-    <link rel="stylesheet" href="../css/reset.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <script src="/js/theme.js"></script>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
     <header class="brand-header">
@@ -264,9 +248,14 @@ async function build() {
             ${spotifyEmbedHtml}
             ${finalContentHtml}
         </article>
-        <footer class="article-footer">
-            <a href="/blog" class="back-link">← Back to all articles</a>
-            <span style="font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase;">Manuscript Sync Active</span>
+        <footer class="brand-footer">
+            <p>© 2026 Mindset by Choice. All rights reserved.</p>
+            <p>Jitka Pekárková · Primátorská 38, Prague · IČO: 87458021</p>
+            <nav>
+                <a href="/">Website</a>
+                <a href="https://youtube.com">YouTube</a>
+                <a href="https://etsy.com">Etsy Shop</a>
+            </nav>
         </footer>
     </main>
 </body>
@@ -302,10 +291,10 @@ async function build() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editorial | Mindset by Choice</title>
-    <script src="../js/theme.js"></script>
-    <link rel="stylesheet" href="../css/variables.css">
-    <link rel="stylesheet" href="../css/reset.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <script src="/js/theme.js"></script>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/main.css">
     <style>
         .blog-header { padding: var(--space-12) 0 var(--space-8) 0; border-bottom: var(--border-thin); margin-bottom: var(--space-8); }
         .blog-title { font-size: var(--text-3xl); margin-bottom: var(--space-2); line-height: 1.35; }
@@ -346,6 +335,15 @@ async function build() {
             <p style="color: var(--color-dimmed); max-width: var(--container-reading);">Deep dives into the architecture of focus. Managed via Notion.</p>
         </header>
         <div class="article-list">${articleItemsHtml}</div>
+        <footer class="brand-footer">
+            <p>© 2026 Mindset by Choice. All rights reserved.</p>
+            <p>Jitka Pekárková · Primátorská 38, Prague · IČO: 87458021</p>
+            <nav>
+                <a href="/">Website</a>
+                <a href="https://youtube.com">YouTube</a>
+                <a href="https://etsy.com">Etsy Shop</a>
+            </nav>
+        </footer>
     </main>
 </body>
 </html>`;
