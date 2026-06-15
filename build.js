@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Bulletproof Edition - Pure JS-Side Filtering Blueprint)
+ * BUILD.JS (Dual-Text Engine: Parses both Column Property & Page Body Blocks)
  * Language: Node.js
  * ==========================================================================
  */
@@ -34,7 +34,6 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
-// Smart update engine that auto-adapts to either native Status or Select types
 async function updateNotionStatus(pageId, isNativeStatus) {
     try {
         const propertiesPayload = {};
@@ -53,7 +52,7 @@ async function updateNotionStatus(pageId, isNativeStatus) {
             },
             body: JSON.stringify({ properties: propertiesPayload })
         });
-        if (res.ok) console.log(`✅ Notion database status synced to 'Published' successfully.`);
+        if (res.ok) console.log(`✅ Notion database status synced to 'Published'.`);
     } catch (error) {
         console.error(`⚠️ Notion status auto-patch failed:`, error);
     }
@@ -64,8 +63,6 @@ async function build() {
         console.log("⚡ Initializing Architecture Build from Notion...");
 
         const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
-        
-        // NO FILTERS SENT TO NOTION API TO BYPASS ALL TYPE-MISMATCH 400 ERRORS
         const dbResponse = await fetch(dbUrl, {
             method: 'POST',
             headers: {
@@ -100,11 +97,10 @@ async function build() {
             const props = page.properties;
             if (!props.Status) continue;
 
-            // Robust multi-type check for status field (handles both Select and Status properties)
             const status = props.Status.select?.name || props.Status.status?.name || 'Draft';
             const isNativeStatus = props.Status.type === 'status';
 
-            // JS-SIDE FILTERING: Skip drafts or empty rows silently
+            // JS-side Filtering
             if (status !== 'Prepared' && status !== 'Published') {
                 continue;
             }
@@ -126,7 +122,6 @@ async function build() {
 
             const publishDate = new Date(dateStr);
 
-            // Time-Gate Guardrail
             if (status === 'Prepared' && publishDate > now) {
                 console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
                 continue; 
@@ -142,33 +137,45 @@ async function build() {
                 day: 'numeric', month: 'short', year: 'numeric'
             });
 
+            // --- PART A: PARSING TEXT FROM THE "TEXT" COLUMN PROPERTY ---
+            let columnTextHtml = '';
+            if (props.Text?.rich_text && props.Text.rich_text.length > 0) {
+                const rawColumnText = parseRichText(props.Text.rich_text);
+                // Split text by newlines into clean semantic paragraphs
+                columnTextHtml = rawColumnText.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('\n');
+            }
+
+            // --- PART B: PARSING TEXT FROM THE ACTUAL PAGE BODY PLÁTNO ---
             const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
             const blocksResponse = await fetch(blocksUrl, {
                 headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
             });
             const blocksData = await blocksResponse.json();
 
-            let bodyHtml = '';
+            let bodyBlocksHtml = '';
             let insideList = false;
 
             if (blocksData.results) {
                 blocksData.results.forEach(block => {
                     const type = block.type;
                     if (type !== 'bulleted_list_item' && insideList) {
-                        bodyHtml += '</ul>\n';
+                        bodyBlocksHtml += '</ul>\n';
                         insideList = false;
                     }
-                    if (type === 'paragraph' && block.paragraph) bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
-                    else if (type === 'heading_2' && block.heading_2) bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
-                    else if (type === 'heading_3' && block.heading_3) bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
-                    else if (type === 'quote' && block.quote) bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
+                    if (type === 'paragraph' && block.paragraph) bodyBlocksHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
+                    else if (type === 'heading_2' && block.heading_2) bodyBlocksHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
+                    else if (type === 'heading_3' && block.heading_3) bodyBlocksHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
+                    else if (type === 'quote' && block.quote) bodyBlocksHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
                     else if (type === 'bulleted_list_item' && block.bulleted_list_item) {
-                        if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
-                        bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
+                        if (!insideList) { bodyBlocksHtml += '<ul>\n'; insideList = true; }
+                        bodyBlocksHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
                     }
                 });
             }
-            if (insideList) bodyHtml += '</ul>\n';
+            if (insideList) bodyBlocksHtml += '</ul>\n';
+
+            // Combining both text sources seamlessly
+            const finalContentHtml = columnTextHtml + bodyBlocksHtml;
 
             const ytId = getYouTubeId(ytLink);
             let videoEmbedHtml = '';
@@ -226,7 +233,10 @@ async function build() {
             <div class="post-meta"><time datetime="${dateStr}">${formattedDate}</time><span>&bull;</span><span>${category}</span></div>
             <h1 class="post-title">${title}</h1>
         </header>
-        <article class="article-body">${videoEmbedHtml}${bodyHtml}</article>
+        <article class="article-body">
+            ${videoEmbedHtml}
+            ${finalContentHtml}
+        </article>
         <footer class="article-footer">
             <a href="/blog" class="back-link">&larr; Back to all articles</a>
             <span style="font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase;">Manuscript Sync Active</span>
@@ -313,14 +323,14 @@ async function build() {
 </body>
 </html>`;
 
-        fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
-        console.log("🔥 Architecture Build Completed Successfully.");
+    fs.writeFileSync(path.join(blogDir, 'index.html'), indexHubTemplate);
+    console.log("🔥 Architecture Build Completed Successfully.");
 
-    } catch (globalError) {
-        console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
-        console.error(globalError);
-        process.exit(1);
-    }
+} catch (globalError) {
+    console.error("⛔ CRITICAL CRASH ENCOUNTERED DURING BUILD PIPELINE:");
+    console.error(globalError);
+    process.exit(1);
+}
 }
 
 build();
