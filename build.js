@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Strict Select-Filter Edition - Error 400 Resolved)
+ * BUILD.JS (Bulletproof Edition - Pure JS-Side Filtering Blueprint)
  * Language: Node.js
  * ==========================================================================
  */
@@ -34,8 +34,16 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
-async function updateNotionStatus(pageId, newStatus) {
+// Smart update engine that auto-adapts to either native Status or Select types
+async function updateNotionStatus(pageId, isNativeStatus) {
     try {
+        const propertiesPayload = {};
+        if (isNativeStatus) {
+            propertiesPayload['Status'] = { status: { name: 'Published' } };
+        } else {
+            propertiesPayload['Status'] = { select: { name: 'Published' } };
+        }
+
         const res = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
             method: 'PATCH',
             headers: {
@@ -43,13 +51,11 @@ async function updateNotionStatus(pageId, newStatus) {
                 'Notion-Version': '2022-06-28',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                properties: { 'Status': { select: { name: newStatus } } }
-            })
+            body: JSON.stringify({ properties: propertiesPayload })
         });
-        if (res.ok) console.log(`✅ Notion synced: Status updated to '${newStatus}'`);
+        if (res.ok) console.log(`✅ Notion database status synced to 'Published' successfully.`);
     } catch (error) {
-        console.error(`⚠️ Notion sync failed:`, error);
+        console.error(`⚠️ Notion status auto-patch failed:`, error);
     }
 }
 
@@ -58,6 +64,8 @@ async function build() {
         console.log("⚡ Initializing Architecture Build from Notion...");
 
         const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
+        
+        // NO FILTERS SENT TO NOTION API TO BYPASS ALL TYPE-MISMATCH 400 ERRORS
         const dbResponse = await fetch(dbUrl, {
             method: 'POST',
             headers: {
@@ -66,13 +74,6 @@ async function build() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                // STRICTLY USING 'select' FILTER ONLY TO PREVENT NOTION API 400 ERROR
-                filter: {
-                    or: [
-                        { property: 'Status', select: { equals: 'Prepared' } },
-                        { property: 'Status', select: { equals: 'Published' } }
-                    ]
-                },
                 sorts: [{ property: 'Publish', direction: 'descending' }]
             })
         });
@@ -85,7 +86,7 @@ async function build() {
         }
 
         if (!dbData.results || dbData.results.length === 0) {
-            console.log("⚠️ No active published or prepared articles found in Notion database.");
+            console.log("⚠️ No entries found in the provided Notion database.");
             return;
         }
 
@@ -97,12 +98,21 @@ async function build() {
 
         for (const page of dbData.results) {
             const props = page.properties;
-            
+            if (!props.Status) continue;
+
+            // Robust multi-type check for status field (handles both Select and Status properties)
+            const status = props.Status.select?.name || props.Status.status?.name || 'Draft';
+            const isNativeStatus = props.Status.type === 'status';
+
+            // JS-SIDE FILTERING: Skip drafts or empty rows silently
+            if (status !== 'Prepared' && status !== 'Published') {
+                continue;
+            }
+
             const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
             let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
             const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
             
-            const status = props.Status?.select?.name || 'Draft';
             const category = props.Category?.select?.name || 'General';
             const dateStr = props.Publish?.date?.start || '2026-01-01'; 
             const summary = props.Summary?.rich_text?.[0]?.plain_text || '';
@@ -116,6 +126,7 @@ async function build() {
 
             const publishDate = new Date(dateStr);
 
+            // Time-Gate Guardrail
             if (status === 'Prepared' && publishDate > now) {
                 console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
                 continue; 
@@ -124,7 +135,7 @@ async function build() {
             console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
 
             if (status === 'Prepared') {
-                await updateNotionStatus(page.id, 'Published');
+                await updateNotionStatus(page.id, isNativeStatus);
             }
 
             const formattedDate = publishDate.toLocaleDateString('en-US', {
