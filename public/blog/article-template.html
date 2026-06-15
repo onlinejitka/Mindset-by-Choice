@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="../js/theme.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Style Is Killing Your Confidence | Mindset by Choice</title>
     
@@ -115,18 +116,19 @@
 <body>
 
     <!-- Header Architecture -->
-    <header class="brand-header">
-        <div class="container flex-between">
-            <a href="/" class="brand-logo">Mindset by Choice</a>
-            <nav>
-                <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
-                    <li><a href="/" style="color: var(--color-dimmed);">Home</a></li>
-                    <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
-                    <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+   <header class="brand-header">
+    <div class="container flex-between">
+        <a href="/" class="brand-logo">Mindset by Choice</a>
+        <nav style="display: flex; align-items: center;">
+            <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+            <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
+        </nav>
+    </div>
+</header>
 
     <!-- Main Reading Container -->
     <main class="container container-reading" style="padding-bottom: var(--space-12);">
