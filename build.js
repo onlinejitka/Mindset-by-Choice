@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Updated for public/ output directory)
+ * BUILD.JS (Automated Scheduling & Notion Status Sync Engine)
  * Language: Node.js
  * ==========================================================================
  */
@@ -34,10 +34,34 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
+// Function to update status directly in Notion workspace
+async function updateNotionStatus(pageId, newStatus) {
+    try {
+        await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${NOTION_TOKEN}`,
+                'Notion-Version': '2022-06-28',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                properties: {
+                    'Status': { select: { name: newStatus } }
+                }
+            })
+        });
+        console.log(`✅ Notion database updated: Status set to '${newStatus}' for page ${pageId}`);
+    } catch (error) {
+        console.error(`⚠️ Failed to update Notion status for page ${pageId}:`, error);
+    }
+}
+
 async function build() {
     console.log("⚡ Initializing Architecture Build from Notion...");
 
     const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
+    
+    // Fetch both Prepared and Published articles
     const dbResponse = await fetch(dbUrl, {
         method: 'POST',
         headers: {
@@ -46,31 +70,39 @@ async function build() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            filter: { property: 'Status', select: { equals: 'Published' } },
-            sorts: [{ property: 'Date', direction: 'descending' }]
+            filter: {
+                or: [
+                    { property: 'Status', select: { equals: 'Prepared' } },
+                    { property: 'Status', select: { equals: 'Published' } }
+                ]
+            },
+            sorts: [{ property: 'Publish', direction: 'descending' }]
         })
     });
 
     const dbData = await dbResponse.json();
     if (!dbData.results || dbData.results.length === 0) {
-        console.log("⚠️ No published articles found.");
+        console.log("⚠️ No articles matching criteria found.");
         return;
     }
 
     const articles = [];
-    
-    // TARGETING THE NEW PUBLIC/BLOG DIRECTORY
     const blogDir = path.join(__dirname, 'public', 'blog');
     if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
 
+    const now = new Date();
+
     for (const page of dbData.results) {
         const props = page.properties;
+        
+        // Exact property matching based on image_91f6a6.png column taxonomy
         const title = props.Name.title[0]?.plain_text || 'Untitled Manuscript';
         const slug = props.Slug.rich_text[0]?.plain_text || page.id;
+        const status = props.Status.select?.name;
         const category = props.Category.select?.name || 'General';
-        const dateStr = props.Date.date?.start || '2026-01-01';
+        const dateStr = props.Publish.date?.start || '2026-01-01'; 
         const summary = props.Summary.rich_text[0]?.plain_text || '';
-        const ytLink = props.YouTubeLink?.url || null;
+        const ytLink = props['YouTube Link']?.url || null; // Bracket notation due to space in column name
         
         let thumbUrl = '../assets/images/placeholder.jpg';
         const thumbProp = props.Thumbnail?.files?.[0];
@@ -78,12 +110,26 @@ async function build() {
             thumbUrl = thumbProp.type === 'file' ? thumbProp.file.url : thumbProp.external.url;
         }
 
-        const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
+        const publishDate = new Date(dateStr);
+
+        // Time-Gate Scheduling Guardrail
+        if (status === 'Prepared' && publishDate > now) {
+            console.log(`⏳ Blocked: /blog/${slug} is scheduled for a future date (${dateStr}). Skipping.`);
+            continue; 
+        }
+
+        console.log(`📑 Rendering active article: /blog/${slug} [Status: ${status}]`);
+
+        // If it was Prepared and passed the time-gate, update it to Published in Notion
+        if (status === 'Prepared') {
+            await updateNotionStatus(page.id, 'Published');
+        }
+
+        const formattedDate = publishDate.toLocaleDateString('en-US', {
             day: 'numeric', month: 'short', year: 'numeric'
         });
 
-        console.log(`📑 Rendering article: /blog/${slug}`);
-
+        // Fetch inner blocks layout content
         const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
         const blocksResponse = await fetch(blocksUrl, {
             headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
@@ -213,7 +259,7 @@ async function build() {
         .article-item { padding: var(--space-6) 0; border-bottom: var(--border-dimmed); display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); align-items: start; transition: padding-left var(--transition-fast), border-color var(--transition-fast); }
         .article-item:hover { padding-left: var(--space-2); border-bottom: var(--border-thin); }
         .article-item:last-child { border-bottom: var(--border-thin); }
-        .article-sidebar { display: flex; flex-direction: column; gap: var(--space-3); }
+        .article-sidebar { display: flex; flex-direction: column; gap: var(--space-35); }
         .article-thumbnail { width: 100%; aspect-ratio: 1 / 1; border: var(--border-dimmed); background-color: var(--color-surface); overflow: hidden; transition: border-color var(--transition-fast); }
         .article-thumbnail img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); transition: filter var(--transition-fast), transform var(--transition-fast); }
         .article-item:hover .article-thumbnail { border-color: var(--color-text); }
