@@ -1,35 +1,28 @@
 /* ==========================================================================
    CSS/VARIABLES.CSS
-   Brand: Mindset by Choice
-   Esthetics: Elite Monochrome Minimalism
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root {
-    /* Core Palette: Absolute Contrast */
+    /* DEFAULT NIGHT MODE (Pure Black) */
     --color-bg: #000000;
     --color-text: #ffffff;
     --color-border: #ffffff;
-    
-    /* Grays for inactive states / subtle hints (Strictly neutral) */
     --color-dimmed: #666666;
-    --color-surface: #0a0a0a; /* Barely lighter than black for depth if needed */
+    --color-surface: #0a0a0a;
 
-    /* Typography */
+    /* Typography & Spacing remain globally consistent */
     --font-primary: 'Anonymous Pro', monospace;
-    
-    /* Font Sizes (Modular Scale) */
-    --text-xs: 0.75rem;   /* 12px */
-    --text-sm: 0.875rem;  /* 14px */
-    --text-base: 1rem;    /* 16px */
-    --text-lg: 1.25rem;   /* 20px */
-    --text-xl: 1.5rem;    /* 24px */
-    --text-2xl: 2rem;     /* 32px */
-    --text-3xl: 3rem;     /* 48px */
-    --text-4xl: 4.5rem;   /* 72px */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 2rem;
+    --text-3xl: 3rem;
+    --text-4xl: 4.5rem;
 
-    /* Spacing & Layout (Generous, breathing room) */
     --space-1: 0.5rem;
     --space-2: 1rem;
     --space-3: 1.5rem;
@@ -39,16 +32,22 @@
     --space-12: 6rem;
     --space-16: 8rem;
 
-    /* Architecture / Borders */
     --border-thin: 1px solid var(--color-border);
     --border-dimmed: 1px solid var(--color-dimmed);
-    --radius-none: 0px; /* Sharp edges only */
+    --radius-none: 0px;
 
-    /* Container constraints */
-    --container-max-width: 900px; /* Editorial column width */
-    --container-reading: 680px;   /* Optimal reading length for blog */
+    --container-max-width: 900px;
+    --container-reading: 680px;
 
-    /* Transitions */
     --transition-fast: 0.2s ease-in-out;
     --transition-slow: 0.5s ease-in-out;
+}
+
+/* DAY MODE OVERRIDES (Pure White) */
+[data-theme="light"] {
+    --color-bg: #ffffff;
+    --color-text: #000000;
+    --color-border: #000000;
+    --color-dimmed: #888888; /* Slightly adjusted for readable contrast against white */
+    --color-surface: #f5f5f5;
 }
