@@ -1,6 +1,6 @@
 /* ==========================================================================
    CSS/MAIN.CSS
-   Global Layout Rules & Dual-Font Structural Rules
+   Global Layout Rules, Brand Fonts & Homepage Hero Architecture
    ========================================================================== */
 
 /* Global base layout inherits the strong brand Monospace */
@@ -18,21 +18,22 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-brand);
     font-weight: 700;
-    line-height: 1.35; /* Increased from 1.2 to give breathing room for titles */
+    line-height: 1.35;
     text-transform: uppercase;
     letter-spacing: -0.02em;
 }
 
+/* Global Heading Sizes */
 h1 { font-size: var(--text-3xl); margin-bottom: var(--space-4); }
 h2 { font-size: var(--text-2xl); margin-bottom: var(--space-3); }
 h3 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
 
-/* CRITICAL UX ENHANCEMENT: Long-form text uses the premium Sans-Serif font */
+/* Long-form text uses the premium Sans-Serif font */
 p {
     font-family: var(--font-reading);
     font-size: var(--text-base);
     font-weight: 400;
-    line-height: 1.8; /* Generous breathing room between reading lines */
+    line-height: 1.8;
     letter-spacing: 0.01em;
     margin-bottom: var(--space-4);
 }
@@ -109,40 +110,33 @@ ul, ol {
     letter-spacing: -0.02em;
 }
 
-.brand-footer {
-    padding: var(--space-8) 0;
-    border-top: var(--border-thin);
-    margin-top: auto;
-    text-align: center;
-}
+/* ==========================================================================
+   HOMEPAGE HERO SECTIONS OVERRIDES (Fix for image_75acde.png)
+   ========================================================================== */
 
-.brand-footer-links {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-4);
+/* Enforces maximum cinematic scale on the homepage main h1 */
+main h1:first-of-type, 
+.hero-title {
+    font-size: var(--text-3xl) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.03em !important;
     margin-top: var(--space-4);
+    margin-bottom: var(--space-6);
 }
 
-.brand-footer-links a {
-    font-size: var(--text-sm);
-    text-transform: uppercase;
+/* Enhances the landing page description paragraph */
+main h1 + p,
+.hero-description {
+    font-size: var(--text-lg) !important; /* Slightly larger narrative font */
+    font-weight: 300 !important;
+    line-height: 1.7 !important;
     color: var(--color-dimmed);
-    transition: color var(--transition-fast);
+    max-width: var(--container-reading);
 }
-
-.brand-footer-links a:hover {
-    color: var(--color-text);
-}
-
-/* Enforcing reading font layout on textareas like the reflection journal */
-.journal-textarea {
-    font-family: var(--font-reading) !important;
-}
-
 
 /* ==========================================================================
    PRODUCTION ARTICLE LAYOUT ARCHITECTURE
-   ========================================================================== */
+   ========================================================================= */
 
 .article-header { 
     padding-top: var(--space-12); 
@@ -152,43 +146,39 @@ ul, ol {
 }
 
 .post-title { 
-    font-size: var(--text-2xl); 
-    line-height: 1.15; 
-    letter-spacing: -0.03em; 
-    text-transform: none; /* Keeps titles raw and organic */
+    font-size: var(--text-2xl) !important; 
+    line-height: 1.15 !important; 
+    letter-spacing: -0.03em !important; 
+    text-transform: none !important; 
     margin-top: var(--space-2);
 }
 
-/* Master paragraph rhythm */
 .article-body p {
     font-family: var(--font-reading);
     font-size: var(--text-base);
-    font-weight: 300; /* Lighter weight for supreme digital layout look */
-    line-height: 1.9;   /* Massive breathing room for focus */
+    font-weight: 300; 
+    line-height: 1.9;   
     color: var(--color-text);
     margin-bottom: var(--space-4);
 }
 
-/* Ultra-Modern Chapter Headings (e.g. PART I: THE HIDDEN LEAKS) */
 .article-body h2 {
     font-size: var(--text-xl);
     font-family: var(--font-brand);
     color: var(--color-text);
-    margin-top: var(--space-12) !important; /* Forces massive space BEFORE a new section */
+    margin-top: var(--space-12) !important; 
     margin-bottom: var(--space-3);
     letter-spacing: 0.05em;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: var(--space-1);
 }
 
-/* Stunning Minimalist Editorial Blockquotes (Centered & Cinematic) */
 .article-body blockquote {
     margin: var(--space-8) auto !important;
     max-width: 85%;
     text-align: center;
-    border-left: none !important; /* Removes the ugly old left bar */
+    border-left: none !important; 
     padding: 0 !important;
-    position: relative;
 }
 
 .article-body blockquote p {
@@ -200,11 +190,14 @@ ul, ol {
     opacity: 0.85;
 }
 
-/* Small spacing line helper */
 .article-body blockquote::before {
     content: "—";
     display: block;
     margin-bottom: var(--space-2);
     color: var(--color-dimmed);
     font-family: var(--font-brand);
+}
+
+.journal-textarea {
+    font-family: var(--font-reading) !important;
 }
