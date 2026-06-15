@@ -3,7 +3,6 @@
    Global Unified Editorial Design System Architecture
    ========================================================================== */
 
-/* Global base layout inherits the strong brand Monospace for structural UI */
 body {
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -16,12 +15,12 @@ body {
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-/* Global Typography - All core headings become luxurious Serifs */
+/* Global Typography - Serifs for Editorial Touch */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-serif);
     font-weight: 400;
     line-height: 1.2;
-    text-transform: none; /* Keeps the elegant natural case casing */
+    text-transform: none; 
     letter-spacing: -0.01em;
 }
 
@@ -29,7 +28,6 @@ h1 { font-size: var(--text-3xl); margin-bottom: var(--space-4); }
 h2 { font-size: var(--text-2xl); margin-bottom: var(--space-3); }
 h3 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
 
-/* Master body text reading metrics */
 p {
     font-family: var(--font-reading);
     font-size: var(--text-base);
@@ -39,26 +37,15 @@ p {
     margin-bottom: var(--space-4);
 }
 
-/* Lists formatting */
-ul, ol {
-    font-family: var(--font-reading);
-    font-weight: 300;
-}
+ul, ol { font-family: var(--font-reading); font-weight: 300; }
 
-/* Structural Layout Containers */
-.container {
-    width: 100%;
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-4);
-}
+.container { width: 100%; max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--space-4); }
 .container-reading { max-width: var(--container-reading); }
 .section-spacing { padding-top: var(--space-12); padding-bottom: var(--space-12); }
 
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .flex-center { display: flex; justify-content: center; align-items: center; }
 
-/* Premium Minimalist Interactive Buttons */
 .btn-primary {
     display: inline-block;
     padding: var(--space-2) var(--space-4);
@@ -72,19 +59,23 @@ ul, ol {
     text-decoration: none;
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
-.btn-primary:hover {
-    background-color: var(--color-text);
-    color: var(--color-bg);
-}
+.btn-primary:hover { background-color: var(--color-text); color: var(--color-bg); }
 
-/* Global Header UI */
 .brand-header { padding: var(--space-4) 0; border-bottom: var(--border-thin); }
 .brand-logo { font-family: var(--font-brand); font-size: var(--text-lg); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; text-decoration: none; }
 
 /* ==========================================================================
-   HOMEPAGE HERO SECTION ARCHITECTURE
+   HOMEPAGE HERO SECTIONS OVERRIDES
    ========================================================================== */
-main h1:first-of-type, 
+.hero-label {
+    font-family: var(--font-brand);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-dimmed);
+    display: block;
+    margin-bottom: var(--space-2);
+}
 .hero-title {
     font-family: var(--font-serif) !important;
     font-size: var(--text-3xl) !important;
@@ -94,14 +85,104 @@ main h1:first-of-type,
     margin-bottom: var(--space-4);
     text-transform: none !important;
 }
-main h1 + p,
 .hero-description {
-    font-family: var(--font-serif) !important;
-    font-size: var(--text-lg) !important; 
-    font-weight: 400 !important;
-    line-height: 1.6 !important;
+    font-family: var(--font-reading) !important; 
+    font-size: var(--text-base) !important; 
+    font-weight: 300 !important;
+    line-height: 1.8 !important;
     color: var(--color-dimmed);
     max-width: var(--container-reading);
+    letter-spacing: 0.02em;
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   RESTORED HOMEPAGE SECTIONS: FEATURES GRID & WORKBOOK (image_745e49.png)
+   ========================================================================== */
+
+/* 01 / 02 Split Layout Grid with middle line divider */
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: var(--border-thin);
+    border-bottom: var(--border-thin);
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-12);
+}
+.feature-col {
+    padding: var(--space-8) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.features-grid .feature-col:first-of-type {
+    border-right: var(--border-thin);
+    padding-left: 0;
+}
+.features-grid .feature-col:last-of-type {
+    padding-right: 0;
+}
+.feature-meta {
+    font-family: var(--font-brand);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text);
+    font-weight: 700;
+    margin-bottom: var(--space-3);
+}
+.feature-text {
+    font-family: var(--font-reading);
+    font-size: var(--text-sm);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--color-dimmed);
+    margin-bottom: var(--space-4);
+    flex: 1; /* Pushes the button neatly to the bottom row */
+}
+
+/* Bottom Callout Container for PDF release */
+.workbook-box {
+    border: var(--border-thin);
+    padding: var(--space-8) var(--space-12);
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: var(--space-12);
+}
+.wb-meta {
+    font-family: var(--font-brand);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-dimmed);
+    margin-bottom: var(--space-2);
+}
+.wb-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+}
+.wb-text {
+    font-family: var(--font-reading);
+    font-size: var(--text-sm);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--color-dimmed);
+    max-width: var(--container-reading);
+    margin-bottom: var(--space-4);
+}
+
+@media (max-width: 768px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .features-grid .feature-col:first-of-type { border-right: none; border-bottom: var(--border-thin); padding-left: var(--space-2); }
+    .features-grid .feature-col:last-of-type { padding-left: var(--space-2); }
+    .workbook-box { padding: var(--space-6) var(--space-4); }
 }
 
 /* ==========================================================================
@@ -114,7 +195,7 @@ main h1 + p,
 
 .post-title { 
     font-family: var(--font-serif) !important;
-    font-size: var(--text-3xl) !important; 
+    font-size: var(--text-2xl) !important; 
     line-height: 1.1 !important; 
     letter-spacing: -0.02em !important; 
     text-transform: none !important; 
@@ -130,10 +211,6 @@ main h1 + p,
     margin-bottom: var(--space-6);
 }
 
-/* Cinematic Drop-Cap for the first paragraph of any Blog Post */
-.article-body > p:first-of-type {
-    font-family: var(--font-reading);
-}
 .article-body > p:first-of-type::first-letter {
     font-family: var(--font-serif);
     font-size: 4.2rem;
@@ -144,10 +221,9 @@ main h1 + p,
     color: var(--color-text);
 }
 
-/* Notion Chapter Headings (e.g. PART I) */
 .article-body h2 {
     font-size: var(--text-xl);
-    font-family: var(--font-brand); /* Kept monospace for structural chapter feel */
+    font-family: var(--font-brand); 
     font-weight: 700;
     text-transform: uppercase;
     color: var(--color-text);
@@ -158,74 +234,18 @@ main h1 + p,
     padding-bottom: var(--space-1);
 }
 
-/* Centered Cinematic Quotes inside Notion Articles */
-.article-body blockquote {
-    margin: var(--space-12) auto !important;
-    max-width: 80%;
-    text-align: center;
-    border-left: none !important; 
-    padding: 0 !important;
-}
-.article-body blockquote p {
-    font-family: var(--font-serif) !important; /* Elegant quote shift */
-    font-size: var(--text-lg) !important;
-    line-height: 1.6 !important;
-    font-style: italic;
-    color: var(--color-text);
-    opacity: 0.9;
-}
-.article-body blockquote::before {
-    content: "—";
-    display: block;
-    margin-bottom: var(--space-2);
-    color: var(--color-dimmed);
-    font-family: var(--font-brand);
-}
+.article-body blockquote { margin: var(--space-12) auto !important; max-width: 80%; text-align: center; border-left: none !important; padding: 0 !important; }
+.article-body blockquote p { font-family: var(--font-serif) !important; font-size: var(--text-lg) !important; line-height: 1.6 !important; font-style: italic; color: var(--color-text); opacity: 0.9; }
+.article-body blockquote::before { content: "—"; display: block; margin-bottom: var(--space-2); color: var(--color-dimmed); font-family: var(--font-brand); }
 
 .journal-textarea { font-family: var(--font-reading) !important; }
 
 /* ==========================================================================
    BRAND FOOTER ARCHITECTURE
    ========================================================================== */
-footer, .brand-footer {
-    padding: var(--space-12) 0 var(--space-12) 0;
-    border-top: var(--border-thin);
-    margin-top: auto; 
-    text-align: center; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
-}
-footer p, .brand-footer p {
-    font-family: var(--font-reading);
-    font-size: var(--text-sm);
-    font-weight: 300;
-    color: var(--color-text);
-    margin-bottom: 0;
-}
-footer p:nth-of-type(2), .brand-footer p:nth-of-type(2) {
-    font-size: var(--text-xs);
-    color: var(--color-dimmed);
-}
-footer nav, .brand-footer nav {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-4);
-    margin-top: var(--space-3);
-    padding: 0;
-}
-footer nav a, .brand-footer nav a {
-    font-family: var(--font-brand);
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-text);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--transition-fast);
-}
-footer nav a:hover, .brand-footer nav a:hover {
-    color: var(--color-dimmed);
-    border-bottom: 1px solid var(--color-dimmed);
-}
+footer, .brand-footer { padding: var(--space-12) 0 var(--space-12) 0; border-top: var(--border-thin); margin-top: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+footer p, .brand-footer p { font-family: var(--font-reading); font-size: var(--text-sm); font-weight: 300; color: var(--color-text); margin-bottom: 0; }
+footer p:nth-of-type(2), .brand-footer p:nth-of-type(2) { font-size: var(--text-xs); color: var(--color-dimmed); }
+footer nav, .brand-footer nav { display: flex; justify-content: center; gap: var(--space-4); margin-top: var(--space-3); padding: 0; }
+footer nav a, .brand-footer nav a { font-family: var(--font-brand); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast); }
+footer nav a:hover, .brand-footer nav a:hover { color: var(--color-dimmed); border-bottom: 1px solid var(--color-dimmed); }
