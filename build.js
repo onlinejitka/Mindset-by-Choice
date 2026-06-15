@@ -1,23 +1,21 @@
 /**
  * ==========================================================================
- * BUILD.JS (Zero-Dependency Static Site Generator via Notion API)
- * Language: Node.js (Native fetch, running strictly at build time)
+ * BUILD.JS (Updated for public/ output directory)
+ * Language: Node.js
  * ==========================================================================
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Environment variables injection (Set secretly in Vercel dashboard)
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
 if (!NOTION_TOKEN || !DATABASE_ID) {
-    console.error("⛔ Error: NOTION_TOKEN or NOTION_DATABASE_ID is missing in environment variables.");
+    console.error("⛔ Error: NOTION_TOKEN or NOTION_DATABASE_ID is missing.");
     process.exit(1);
 }
 
-// Helper to extract YouTube ID from any standard YT URL
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -25,7 +23,6 @@ function getYouTubeId(url) {
     return (match && match[2].length === 12) ? match[2] : (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Convert Notion Rich Text arrays into clean semantic HTML string
 function parseRichText(richTextArray) {
     if (!richTextArray) return '';
     return richTextArray.map(text => {
@@ -37,11 +34,9 @@ function parseRichText(richTextArray) {
     }).join('');
 }
 
-// Core Build Process Engine
 async function build() {
     console.log("⚡ Initializing Architecture Build from Notion...");
 
-    // 1. Fetch all Published articles from Notion Database
     const dbUrl = `https://api.notion.com/v1/databases/${DATABASE_ID}/query`;
     const dbResponse = await fetch(dbUrl, {
         method: 'POST',
@@ -51,33 +46,25 @@ async function build() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            filter: {
-                property: 'Status',
-                select: { equals: 'Published' }
-            },
-            sorts: [
-                { property: 'Date', direction: 'descending' }
-            ]
+            filter: { property: 'Status', select: { equals: 'Published' } },
+            sorts: [{ property: 'Date', direction: 'descending' }]
         })
     });
 
     const dbData = await dbResponse.json();
     if (!dbData.results || dbData.results.length === 0) {
-        console.log("⚠️ No published articles found. Generation halted.");
+        console.log("⚠️ No published articles found.");
         return;
     }
 
     const articles = [];
+    
+    // TARGETING THE NEW PUBLIC/BLOG DIRECTORY
+    const blogDir = path.join(__dirname, 'public', 'blog');
+    if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
 
-    // Ensure the blog subdirectory exists locally before outputting files
-    const blogDir = path.join(__dirname, 'blog');
-    if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir);
-
-    // 2. Loop through every article and build its individual static HTML page
     for (const page of dbData.results) {
         const props = page.properties;
-        
-        // Extract metadata safely
         const title = props.Name.title[0]?.plain_text || 'Untitled Manuscript';
         const slug = props.Slug.rich_text[0]?.plain_text || page.id;
         const category = props.Category.select?.name || 'General';
@@ -85,62 +72,44 @@ async function build() {
         const summary = props.Summary.rich_text[0]?.plain_text || '';
         const ytLink = props.YouTubeLink?.url || null;
         
-        // Extract Notion thumbnail image URL securely
-        let thumbUrl = '../assets/images/placeholder.jpg'; // fallback layout asset
+        let thumbUrl = '../assets/images/placeholder.jpg';
         const thumbProp = props.Thumbnail?.files?.[0];
         if (thumbProp) {
             thumbUrl = thumbProp.type === 'file' ? thumbProp.file.url : thumbProp.external.url;
         }
 
-        // Format dates cleanly for luxury reading standards
         const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
             day: 'numeric', month: 'short', year: 'numeric'
         });
 
         console.log(`📑 Rendering article: /blog/${slug}`);
 
-        // Fetch page blocks (the body text content inside the page)
         const blocksUrl = `https://api.notion.com/v1/blocks/${page.id}/children?page_size=100`;
         const blocksResponse = await fetch(blocksUrl, {
-            headers: {
-                'Authorization': `Bearer ${NOTION_TOKEN}`,
-                'Notion-Version': '2022-06-28'
-            }
+            headers: { 'Authorization': `Bearer ${NOTION_TOKEN}`, 'Notion-Version': '2022-06-28' }
         });
         const blocksData = await blocksResponse.json();
 
-        // Convert Notion Blocks layout to HTML blocks
         let bodyHtml = '';
         let insideList = false;
 
         blocksData.results.forEach(block => {
             const type = block.type;
-            
-            // Close list tag if block changes state
             if (type !== 'bulleted_list_item' && insideList) {
                 bodyHtml += '</ul>\n';
                 insideList = false;
             }
-
-            if (type === 'paragraph') {
-                bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
-            } else if (type === 'heading_2') {
-                bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
-            } else if (type === 'heading_3') {
-                bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
-            } else if (type === 'quote') {
-                bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
-            } else if (type === 'bulleted_list_item') {
-                if (!insideList) {
-                    bodyHtml += '<ul>\n';
-                    insideList = true;
-                }
+            if (type === 'paragraph') bodyHtml += `<p>${parseRichText(block.paragraph.rich_text)}</p>\n`;
+            else if (type === 'heading_2') bodyHtml += `<h2>${parseRichText(block.heading_2.rich_text)}</h2>\n`;
+            else if (type === 'heading_3') bodyHtml += `<h3>${parseRichText(block.heading_3.rich_text)}</h3>\n`;
+            else if (type === 'quote') bodyHtml += `<blockquote><p>${parseRichText(block.quote.rich_text)}</p></blockquote>\n`;
+            else if (type === 'bulleted_list_item') {
+                if (!insideList) { bodyHtml += '<ul>\n'; insideList = true; }
                 bodyHtml += `<li>${parseRichText(block.bulleted_list_item.rich_text)}</li>\n`;
             }
         });
         if (insideList) bodyHtml += '</ul>\n';
 
-        // Integrate Premium YouTube Embed Layout if URL is given
         const ytId = getYouTubeId(ytLink);
         let videoEmbedHtml = '';
         if (ytId) {
@@ -150,7 +119,6 @@ async function build() {
             </div>`;
         }
 
-        // Construct the full standalone Article Page Template layout
         const articleTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -190,23 +158,13 @@ async function build() {
             </nav>
         </div>
     </header>
-
     <main class="container container-reading" style="padding-bottom: var(--space-12);">
         <header class="article-header">
             <a href="/blog" class="back-link">&larr; Return to Editorial</a>
-            <div class="post-meta">
-                <time datetime="${dateStr}">${formattedDate}</time>
-                <span>&bull;</span>
-                <span>${category}</span>
-            </div>
+            <div class="post-meta"><time datetime="${dateStr}">${formattedDate}</time><span>&bull;</span><span>${category}</span></div>
             <h1 class="post-title">${title}</h1>
         </header>
-
-        <article class="article-body">
-            ${videoEmbedHtml}
-            ${bodyHtml}
-        </article>
-
+        <article class="article-body">${videoEmbedHtml}${bodyHtml}</article>
         <footer class="article-footer">
             <a href="/blog" class="back-link">&larr; Back to all articles</a>
             <span style="font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase;">Manuscript Sync Active</span>
@@ -215,33 +173,24 @@ async function build() {
 </body>
 </html>`;
 
-        // Write the individual article HTML file to disk
         fs.writeFileSync(path.join(blogDir, `${slug}.html`), articleTemplate);
-
-        // Store item reference for index compiler array
         articles.push({ title, slug, category, formattedDate, dateStr, summary, thumbUrl });
     }
 
-    // 3. Compile dynamically the Blog Listing Grid Overview Hub (blog/index.html)
     console.log("🏁 Compilation: Constructing Blog Hub index grid...");
-    
     let articleItemsHtml = '';
     articles.forEach(art => {
         articleItemsHtml += `
             <article class="article-item">
                 <div class="article-sidebar">
-                    <div class="article-thumbnail">
-                        <img src="${art.thumbUrl}" alt="${art.title}">
-                    </div>
+                    <div class="article-thumbnail"><img src="${art.thumbUrl}" alt="${art.title}"></div>
                     <aside class="article-meta">
                         <time datetime="${art.dateStr}">${art.formattedDate}</time>
                         <div style="color: var(--color-text); margin-top: 2px;">${art.category}</div>
                     </aside>
                 </div>
                 <div class="article-content">
-                    <a href="/blog/${art.slug}">
-                        <h2>${art.title}</h2>
-                    </a>
+                    <a href="/blog/${art.slug}"><h2>${art.title}</h2></a>
                     <p>${art.summary}</p>
                     <a href="/blog/${art.slug}" class="read-more">Read Full Article</a>
                 </div>
@@ -274,11 +223,7 @@ async function build() {
         .article-content p { font-size: var(--text-base); color: var(--color-dimmed); margin-bottom: var(--space-3); max-width: var(--container-reading); }
         .read-more { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast); }
         .article-item:hover .read-more { border-color: var(--color-text); }
-        @media (max-width: 768px) {
-            .article-item { grid-template-columns: 1fr; gap: var(--space-4); }
-            .article-sidebar { flex-direction: row; align-items: center; gap: var(--space-4); }
-            .article-thumbnail { width: 80px; }
-        }
+        @media (max-width: 768px) { .article-item { grid-template-columns: 1fr; gap: var(--space-4); } .article-sidebar { flex-direction: row; align-items: center; gap: var(--space-4); } .article-thumbnail { width: 80px; } }
     </style>
 </head>
 <body>
@@ -294,18 +239,12 @@ async function build() {
             </nav>
         </div>
     </header>
-
     <main class="container">
         <header class="blog-header">
             <h1 class="blog-title">Editorial</h1>
-            <p style="color: var(--color-dimmed); max-width: var(--container-reading);">
-                Deep dives into the architecture of focus, self-mastery, and the psychology of high standards. Managed via Notion.
-            </p>
+            <p style="color: var(--color-dimmed); max-width: var(--container-reading);">Deep dives into the architecture of focus. Managed via Notion.</p>
         </header>
-
-        <div class="article-list">
-            ${articleItemsHtml}
-        </div>
+        <div class="article-list">${articleItemsHtml}</div>
     </main>
 </body>
 </html>`;
