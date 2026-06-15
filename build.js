@@ -223,7 +223,9 @@ async function build() {
         articles.push({ title, slug, category, formattedDate, dateStr, summary, thumbUrl });
     }
 
+    // 3. Compile dynamically the Blog Listing Grid Overview Hub (blog/index.html)
     console.log("🏁 Compilation: Constructing Blog Hub index grid...");
+    
     let articleItemsHtml = '';
     articles.forEach(art => {
         articleItemsHtml += `
@@ -243,12 +245,16 @@ async function build() {
             </article>\n`;
     });
 
+    // HERE IS THE INDEX HUB TEMPLATE VARIABLE WITH THE THEME TOGGLE INTEGRATED
     const indexHubTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editorial | Mindset by Choice</title>
+    
+    <script src="../js/theme.js"></script>
+
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="../css/main.css">
@@ -259,8 +265,8 @@ async function build() {
         .article-item { padding: var(--space-6) 0; border-bottom: var(--border-dimmed); display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); align-items: start; transition: padding-left var(--transition-fast), border-color var(--transition-fast); }
         .article-item:hover { padding-left: var(--space-2); border-bottom: var(--border-thin); }
         .article-item:last-child { border-bottom: var(--border-thin); }
-        .article-sidebar { display: flex; flex-direction: column; gap: var(--space-35); }
-        .article-thumbnail { width: 100%; aspect-ratio: 1 / 1; border: var(--border-dimmed); background-color: var(--color-surface); overflow: hidden; transition: border-color var(--transition-fast); }
+        .article-sidebar { display: flex; flex-direction: column; gap: var(--space-3); }
+        .article-thumbnail { width: 100%; aspect-ratio: 1 / 1; border: var(--border-thin); background-color: var(--color-surface); overflow: hidden; transition: border-color var(--transition-fast); }
         .article-thumbnail img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); transition: filter var(--transition-fast), transform var(--transition-fast); }
         .article-item:hover .article-thumbnail { border-color: var(--color-text); }
         .article-item:hover .article-thumbnail img { transform: scale(1.03); filter: grayscale(100%) contrast(1.25); }
@@ -276,12 +282,13 @@ async function build() {
     <header class="brand-header">
         <div class="container flex-between">
             <a href="/" class="brand-logo">Mindset by Choice</a>
-            <nav>
+            <nav style="display: flex; align-items: center;">
                 <ul style="display: flex; gap: var(--space-4); text-transform: uppercase; font-size: var(--text-sm);">
                     <li><a href="/" style="color: var(--color-dimmed);">Home</a></li>
                     <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
                     <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
                 </ul>
+                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
             </nav>
         </div>
     </header>
