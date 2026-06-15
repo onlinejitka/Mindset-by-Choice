@@ -173,12 +173,12 @@ async function build() {
                 </div>`;
             }
 
-            const spotifyEmbedUrl = getSpotifyEmbedUrl(spotifyLink);
+           const spotifyEmbedUrl = getSpotifyEmbedUrl(spotifyLink);
             let spotifyEmbedHtml = '';
             if (spotifyEmbedUrl) {
                 spotifyEmbedHtml = `
-                <div style="width: 100%; margin: var(--space-6) 0 0 0;">
-                    <iframe src="${spotifyEmbedUrl}" width="100%" height="232" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border: none;"></iframe>
+                <div style="width: 100%; margin: var(--space-4) 0 var(--space-6) 0; border: var(--border-thin); background: #000; line-height: 0;">
+                    <iframe src="${spotifyEmbedUrl}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border: none; display: block;"></iframe>
                 </div>`;
             }
 
