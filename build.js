@@ -1,6 +1,6 @@
 /**
  * ==========================================================================
- * BUILD.JS (Robust Anti-Crash Version for Output public/)
+ * BUILD.JS (Production Grade - Auto-Sanitization & Strict Error Logging)
  * Language: Node.js
  * ==========================================================================
  */
@@ -36,8 +36,7 @@ function parseRichText(richTextArray) {
 
 async function updateNotionStatus(pageId, newStatus) {
     try {
-        // Safe check to patch either standard Select or Native Status
-        await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+        const res = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${NOTION_TOKEN}`,
@@ -45,14 +44,12 @@ async function updateNotionStatus(pageId, newStatus) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                properties: {
-                    'Status': { select: { name: newStatus } }
-                }
+                properties: { 'Status': { select: { name: newStatus } } }
             })
         });
-        console.log(`✅ Notion database synced: Status updated to '${newStatus}'`);
+        if (res.ok) console.log(`✅ Notion synced: Status updated to '${newStatus}'`);
     } catch (error) {
-        console.error(`⚠️ Failed to update Notion status:`, error);
+        console.error(`⚠️ Notion sync failed:`, error);
     }
 }
 
@@ -81,8 +78,15 @@ async function build() {
     });
 
     const dbData = await dbResponse.json();
+    
+    // Strict Error Checking for Notion API
+    if (dbData.object === 'error') {
+        console.error(`⛔ Notion API Error (${dbData.status}): ${dbData.message}`);
+        process.exit(1); // Fails the Vercel build visibly so you can check logs
+    }
+
     if (!dbData.results || dbData.results.length === 0) {
-        console.log("⚠️ No active published or prepared articles found.");
+        console.log("⚠️ No active published or prepared articles found in Notion database.");
         return;
     }
 
@@ -95,9 +99,12 @@ async function build() {
     for (const page of dbData.results) {
         const props = page.properties;
         
-        // Deep optional chaining protection to ensure 0% crash rate
         const title = props.Name?.title?.[0]?.plain_text || 'Untitled Manuscript';
-        const slug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
+        let rawSlug = props.Slug?.rich_text?.[0]?.plain_text || page.id;
+        
+        // AUTOMATIC SLUG SANITIZATION: Converts spaces to dashes, removes bad characters, lowercases
+        const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+        
         const status = props.Status?.select?.name || props.Status?.status?.name || 'Draft';
         const category = props.Category?.select?.name || 'General';
         const dateStr = props.Publish?.date?.start || '2026-01-01'; 
@@ -113,7 +120,7 @@ async function build() {
         const publishDate = new Date(dateStr);
 
         if (status === 'Prepared' && publishDate > now) {
-            console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing. Skipping.`);
+            console.log(`⏳ Scheduled: /blog/${slug} is set for future publishing (${dateStr}). Skipping.`);
             continue; 
         }
 
@@ -201,7 +208,7 @@ async function build() {
                     <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
                     <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
                 </ul>
-                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
+                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin); background: none; color: inherit;">[ Day ]</button>
             </nav>
         </div>
     </header>
@@ -284,7 +291,7 @@ async function build() {
                     <li><a href="/blog" style="border-bottom: var(--border-thin);">Blog</a></li>
                     <li><a href="/dashboard" style="color: var(--color-dimmed);">Dashboard</a></li>
                 </ul>
-                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin);">[ Day ]</button>
+                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin); background: none; color: inherit;">[ Day ]</button>
             </nav>
         </div>
     </header>
