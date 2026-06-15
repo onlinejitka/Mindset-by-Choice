@@ -10,6 +10,8 @@ body {
     font-family: var(--font-brand);
     line-height: 1.5;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     overflow-x: hidden;
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
@@ -127,7 +129,7 @@ main h1:first-of-type,
 /* Enhances the landing page description paragraph */
 main h1 + p,
 .hero-description {
-    font-size: var(--text-lg) !important; /* Slightly larger narrative font */
+    font-size: var(--text-lg) !important;
     font-weight: 300 !important;
     line-height: 1.7 !important;
     color: var(--color-dimmed);
@@ -136,7 +138,7 @@ main h1 + p,
 
 /* ==========================================================================
    PRODUCTION ARTICLE LAYOUT ARCHITECTURE
-   ========================================================================= */
+   ========================================================================== */
 
 .article-header { 
     padding-top: var(--space-12); 
@@ -200,4 +202,73 @@ main h1 + p,
 
 .journal-textarea {
     font-family: var(--font-reading) !important;
+}
+
+/* ==========================================================================
+   BRAND FOOTER ARCHITECTURE (Fix for image_7559c7.png)
+   ========================================================================== */
+
+footer,
+.brand-footer {
+    padding: var(--space-8) 0 var(--space-12) 0;
+    border-top: var(--border-thin);
+    margin-top: auto; /* Pushes footer to the absolute bottom of viewport */
+    text-align: center; /* Centers all raw typography texts globally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Resets standard paragraph flow inside the footer wrapper */
+.brand-footer p,
+footer p {
+    font-family: var(--font-reading);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* Target for billing, legal, address or IČO data text strings */
+.brand-footer p:nth-of-type(2),
+footer p:nth-of-type(2) {
+    font-size: var(--text-xs);
+    color: var(--color-dimmed);
+    letter-spacing: 0.01em;
+}
+
+/* Centered link row wrapper */
+.brand-footer-links,
+.brand-footer nav,
+footer nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    list-style: none;
+    padding: 0;
+}
+
+/* High-Contrast brand specific styling for footer anchor tags */
+.brand-footer-links a,
+.brand-footer nav a,
+footer nav a,
+footer nav ul li a {
+    font-family: var(--font-brand); /* Forces pure code-style monospace links */
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.brand-footer-links a:hover,
+.brand-footer nav a:hover,
+footer nav a:hover {
+    color: var(--color-dimmed);
+    border-bottom: 1px solid var(--color-dimmed);
 }
