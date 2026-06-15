@@ -1,9 +1,9 @@
 /* ==========================================================================
    CSS/MAIN.CSS
-   Global Layout Rules, Brand Fonts & Homepage Hero Architecture
+   Global Unified Editorial Design System Architecture
    ========================================================================== */
 
-/* Global base layout inherits the strong brand Monospace */
+/* Global base layout inherits the strong brand Monospace for structural UI */
 body {
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -16,141 +16,107 @@ body {
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-/* Typography Rules */
+/* Global Typography - All core headings become luxurious Serifs */
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-brand);
-    font-weight: 700;
-    line-height: 1.35;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 1.2;
+    text-transform: none; /* Keeps the elegant natural case casing */
+    letter-spacing: -0.01em;
 }
 
-/* Global Heading Sizes */
 h1 { font-size: var(--text-3xl); margin-bottom: var(--space-4); }
 h2 { font-size: var(--text-2xl); margin-bottom: var(--space-3); }
 h3 { font-size: var(--text-xl); margin-bottom: var(--space-2); }
 
-/* Long-form text uses the premium Sans-Serif font */
+/* Master body text reading metrics */
 p {
     font-family: var(--font-reading);
     font-size: var(--text-base);
-    font-weight: 400;
-    line-height: 1.8;
+    font-weight: 300; 
+    line-height: 1.85;
     letter-spacing: 0.01em;
     margin-bottom: var(--space-4);
 }
 
-/* Lists adjust to reading font */
+/* Lists formatting */
 ul, ol {
     font-family: var(--font-reading);
+    font-weight: 300;
 }
 
-/* Structural Utility Classes */
+/* Structural Layout Containers */
 .container {
     width: 100%;
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--space-4);
 }
+.container-reading { max-width: var(--container-reading); }
+.section-spacing { padding-top: var(--space-12); padding-bottom: var(--space-12); }
 
-.container-reading {
-    max-width: var(--container-reading);
-}
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
 
-.section-spacing {
-    padding-top: var(--space-12);
-    padding-bottom: var(--space-12);
-}
-
-/* Layout Utilities */
-.flex-between {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-6);
-}
-
-/* Premium Minimalist Interactive Components */
+/* Premium Minimalist Interactive Buttons */
 .btn-primary {
     display: inline-block;
     padding: var(--space-2) var(--space-4);
     border: var(--border-thin);
     color: var(--color-text);
     text-transform: uppercase;
-    font-size: var(--text-sm);
+    font-family: var(--font-brand);
+    font-size: var(--text-xs);
     font-weight: 700;
     letter-spacing: 0.05em;
+    text-decoration: none;
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
-
 .btn-primary:hover {
     background-color: var(--color-text);
     color: var(--color-bg);
 }
 
-/* Shared Eco-System Layout Blocks */
-.brand-header {
-    padding: var(--space-4) 0;
-    border-bottom: var(--border-thin);
-}
-
-.brand-logo {
-    font-size: var(--text-lg);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-}
+/* Global Header UI */
+.brand-header { padding: var(--space-4) 0; border-bottom: var(--border-thin); }
+.brand-logo { font-family: var(--font-brand); font-size: var(--text-lg); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; text-decoration: none; }
 
 /* ==========================================================================
-   HOMEPAGE HERO SECTIONS OVERRIDES (Fix for image_75acde.png)
+   HOMEPAGE HERO SECTION ARCHITECTURE
    ========================================================================== */
-
-/* Enforces maximum cinematic scale on the homepage main h1 */
 main h1:first-of-type, 
 .hero-title {
+    font-family: var(--font-serif) !important;
     font-size: var(--text-3xl) !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.03em !important;
-    margin-top: var(--space-4);
-    margin-bottom: var(--space-6);
+    line-height: 1.15 !important;
+    letter-spacing: -0.02em !important;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+    text-transform: none !important;
 }
-
-/* Enhances the landing page description paragraph */
 main h1 + p,
 .hero-description {
-    font-size: var(--text-lg) !important;
-    font-weight: 300 !important;
-    line-height: 1.7 !important;
+    font-family: var(--font-serif) !important;
+    font-size: var(--text-lg) !important; 
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
     color: var(--color-dimmed);
     max-width: var(--container-reading);
 }
 
 /* ==========================================================================
-   PRODUCTION ARTICLE LAYOUT ARCHITECTURE
+   PRODUCTION ARTICLE DETAIL ARCHITECTURE (Notion Blog Posts)
    ========================================================================== */
-
-.article-header { 
-    padding-top: var(--space-12); 
-    padding-bottom: var(--space-4); 
-    border-bottom: var(--border-thin); 
-    margin-bottom: var(--space-8); 
-}
+.article-header { padding-top: var(--space-12); padding-bottom: var(--space-4); border-bottom: var(--border-thin); margin-bottom: var(--space-8); }
+.back-link { font-size: var(--text-sm); text-transform: uppercase; color: var(--color-dimmed); display: inline-flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-6); text-decoration: none; }
+.back-link:hover { color: var(--color-text); }
+.post-meta { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dimmed); margin-bottom: var(--space-3); display: flex; gap: var(--space-3); }
 
 .post-title { 
-    font-size: var(--text-2xl) !important; 
-    line-height: 1.15 !important; 
-    letter-spacing: -0.03em !important; 
+    font-family: var(--font-serif) !important;
+    font-size: var(--text-3xl) !important; 
+    line-height: 1.1 !important; 
+    letter-spacing: -0.02em !important; 
     text-transform: none !important; 
     margin-top: var(--space-2);
 }
@@ -161,37 +127,53 @@ main h1 + p,
     font-weight: 300; 
     line-height: 1.9;   
     color: var(--color-text);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-6);
 }
 
+/* Cinematic Drop-Cap for the first paragraph of any Blog Post */
+.article-body > p:first-of-type {
+    font-family: var(--font-reading);
+}
+.article-body > p:first-of-type::first-letter {
+    font-family: var(--font-serif);
+    font-size: 4.2rem;
+    float: left;
+    line-height: 0.8;
+    padding-right: var(--space-2);
+    padding-top: var(--space-1);
+    color: var(--color-text);
+}
+
+/* Notion Chapter Headings (e.g. PART I) */
 .article-body h2 {
     font-size: var(--text-xl);
-    font-family: var(--font-brand);
+    font-family: var(--font-brand); /* Kept monospace for structural chapter feel */
+    font-weight: 700;
+    text-transform: uppercase;
     color: var(--color-text);
     margin-top: var(--space-12) !important; 
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
     letter-spacing: 0.05em;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: var(--space-1);
 }
 
+/* Centered Cinematic Quotes inside Notion Articles */
 .article-body blockquote {
-    margin: var(--space-8) auto !important;
-    max-width: 85%;
+    margin: var(--space-12) auto !important;
+    max-width: 80%;
     text-align: center;
     border-left: none !important; 
     padding: 0 !important;
 }
-
 .article-body blockquote p {
-    font-family: var(--font-reading);
+    font-family: var(--font-serif) !important; /* Elegant quote shift */
     font-size: var(--text-lg) !important;
     line-height: 1.6 !important;
     font-style: italic;
     color: var(--color-text);
-    opacity: 0.85;
+    opacity: 0.9;
 }
-
 .article-body blockquote::before {
     content: "—";
     display: block;
@@ -200,75 +182,50 @@ main h1 + p,
     font-family: var(--font-brand);
 }
 
-.journal-textarea {
-    font-family: var(--font-reading) !important;
-}
+.journal-textarea { font-family: var(--font-reading) !important; }
 
 /* ==========================================================================
-   BRAND FOOTER ARCHITECTURE (Fix for image_7559c7.png)
+   BRAND FOOTER ARCHITECTURE
    ========================================================================== */
-
-footer,
-.brand-footer {
-    padding: var(--space-8) 0 var(--space-12) 0;
+footer, .brand-footer {
+    padding: var(--space-12) 0 var(--space-12) 0;
     border-top: var(--border-thin);
-    margin-top: auto; /* Pushes footer to the absolute bottom of viewport */
-    text-align: center; /* Centers all raw typography texts globally */
+    margin-top: auto; 
+    text-align: center; 
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
 }
-
-/* Resets standard paragraph flow inside the footer wrapper */
-.brand-footer p,
-footer p {
+footer p, .brand-footer p {
     font-family: var(--font-reading);
     font-size: var(--text-sm);
+    font-weight: 300;
     color: var(--color-text);
     margin-bottom: 0;
-    line-height: 1.6;
 }
-
-/* Target for billing, legal, address or IČO data text strings */
-.brand-footer p:nth-of-type(2),
-footer p:nth-of-type(2) {
+footer p:nth-of-type(2), .brand-footer p:nth-of-type(2) {
     font-size: var(--text-xs);
     color: var(--color-dimmed);
-    letter-spacing: 0.01em;
 }
-
-/* Centered link row wrapper */
-.brand-footer-links,
-.brand-footer nav,
-footer nav {
+footer nav, .brand-footer nav {
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: var(--space-4);
     margin-top: var(--space-3);
-    list-style: none;
     padding: 0;
 }
-
-/* High-Contrast brand specific styling for footer anchor tags */
-.brand-footer-links a,
-.brand-footer nav a,
-footer nav a,
-footer nav ul li a {
-    font-family: var(--font-brand); /* Forces pure code-style monospace links */
+footer nav a, .brand-footer nav a {
+    font-family: var(--font-brand);
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-text);
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-color var(--transition-fast), color var(--transition-fast);
+    transition: border-color var(--transition-fast);
 }
-
-.brand-footer-links a:hover,
-.brand-footer nav a:hover,
-footer nav a:hover {
+footer nav a:hover, .brand-footer nav a:hover {
     color: var(--color-dimmed);
     border-bottom: 1px solid var(--color-dimmed);
 }
