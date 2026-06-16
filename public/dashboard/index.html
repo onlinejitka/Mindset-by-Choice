@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5-Day Challenge | Mindset by Choice</title>
+    <title>Architecture Hub | Mindset by Choice</title>
     
     <script src="/js/theme.js"></script>
 
-    <!-- Import pro prémiový patkový font (Playfair Display) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap');
     </style>
@@ -17,20 +16,31 @@
     <link rel="stylesheet" href="/css/main.css">
     
     <style>
-        :root {
-            --font-serif: 'Playfair Display', serif;
-        }
+        :root { --font-serif: 'Playfair Display', serif; }
 
-        /* --- OVERVIEW VIEW STYLES --- */
-        .overview-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-8); padding: var(--space-8) 0 var(--space-12) 0; }
+        /* --- HUB VIEW STYLES --- */
+        .hub-grid { display: flex; flex-direction: column; margin-top: var(--space-6); margin-bottom: var(--space-12); }
+        .challenge-card { display: flex; align-items: center; justify-content: space-between; padding: var(--space-6) 0; border-bottom: var(--border-thin); transition: padding-left var(--transition-fast); }
+        .challenge-card.unlocked:hover { padding-left: var(--space-2); cursor: pointer; }
+        .challenge-card.locked { opacity: 0.4; }
+        
+        .card-left { display: flex; align-items: center; gap: var(--space-6); }
+        .card-index { font-family: var(--font-brand); font-size: var(--text-sm); color: var(--color-dimmed); width: 40px; }
+        .card-title { font-family: var(--font-serif); font-size: var(--text-2xl); font-weight: 400; color: var(--color-text); }
+        .card-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        
+        .card-right { display: flex; align-items: center; gap: var(--space-4); }
+        .badge-free { font-family: var(--font-brand); font-size: var(--text-xs); background: var(--color-text); color: var(--color-bg); padding: 2px var(--space-2); letter-spacing: 0.05em; font-weight: 700; }
+        .btn-etsy { font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text); border: var(--border-thin); padding: var(--space-1) var(--space-3); text-decoration: none; transition: all var(--transition-fast); }
+        .btn-etsy:hover { background: var(--color-text); color: var(--color-bg); }
+
+        /* --- CHALLENGE OVERVIEW STYLES (image_dc9d4a.png) --- */
+        .overview-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-8); padding: var(--space-4) 0 var(--space-12) 0; }
         .overview-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: var(--space-4); }
-        .overview-title { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1.1; font-weight: 400; text-transform: none; letter-spacing: -0.02em; }
+        .overview-title { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1.1; font-weight: 400; }
         .overview-desc { font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-dimmed); line-height: 1.6; margin-bottom: var(--space-4); }
-        .btn-black { display: inline-block; background: var(--color-text); color: var(--color-bg); font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-2) var(--space-4); text-decoration: none; transition: opacity var(--transition-fast); border: none; cursor: pointer; }
-        .btn-black:hover { opacity: 0.8; }
-
+        
         .list-header { display: flex; justify-content: space-between; border-top: var(--border-thin); border-bottom: var(--border-thin); padding: var(--space-2) 0; font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-dimmed); margin-bottom: var(--space-4); }
-
         .day-row { display: flex; align-items: center; padding: var(--space-4) 0; border-bottom: var(--border-thin); cursor: pointer; transition: padding-left var(--transition-fast); }
         .day-row:not(.locked):hover { padding-left: var(--space-2); }
         .day-row.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
@@ -40,30 +50,28 @@
         .row-title { font-family: var(--font-serif); font-size: var(--text-2xl); font-weight: 400; }
         .row-status { font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.15em; }
 
-        /* --- DAY DETAIL EDITORIAL LAYOUT --- */
-        .day-back { display: inline-block; font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dimmed); cursor: pointer; margin-bottom: var(--space-8); border: none; background: none; }
+        /* --- DAY DETAIL STYLES (image_dc9a7f.png) --- */
+        .day-back { display: inline-block; font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dimmed); cursor: pointer; margin-bottom: var(--space-6); border: none; background: none; padding: 0; }
         .day-back:hover { color: var(--color-text); }
-        
         .day-header-grid { display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); border-bottom: var(--border-thin); padding-bottom: var(--space-6); margin-bottom: var(--space-6); align-items: end; }
         .dh-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; line-height: 1.6; }
         .dh-title { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1; font-weight: 400; margin-bottom: -6px; }
-
+        
         .audio-section { border-bottom: var(--border-thin); padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
         .a-meta { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; }
         .a-title { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 400; margin-top: var(--space-4); margin-bottom: var(--space-4); }
         .audio-ui { display: flex; align-items: center; gap: var(--space-4); }
-        .play-btn { width: 48px; height: 48px; border: var(--border-thin); background: transparent; color: var(--color-text); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .play-btn { width: 48px; height: 48px; border: var(--border-thin); background: transparent; color: var(--color-text); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .play-btn::after { content: "▶"; margin-left: 2px; font-size: 0.8rem; }
         .progress-bar { flex: 1; height: 16px; background: var(--color-surface); position: relative; }
-        .progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 2%; background: var(--color-text); }
+        .progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 3%; background: var(--color-text); }
 
         .content-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); border-bottom: var(--border-thin); padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
         .reflection-col { border-right: var(--border-thin); padding-right: var(--space-8); }
-        .section-label { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-6); }
+        .section-label { font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: var(--space-6); }
         
         .drop-cap-text { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.9; color: var(--color-text); font-weight: 300; }
         .drop-cap-text::first-letter { font-family: var(--font-serif); font-size: 4rem; float: left; line-height: 0.8; padding-right: var(--space-2); padding-top: var(--space-1); color: var(--color-text); }
-
         .action-intro, .action-outro { font-family: var(--font-reading); font-size: var(--text-base); line-height: 1.9; color: var(--color-text); font-weight: 300; margin-bottom: var(--space-6); }
         
         .step-block { display: grid; grid-template-columns: 24px 1fr; gap: var(--space-3); margin-bottom: var(--space-4); align-items: start; }
@@ -73,19 +81,14 @@
         .journal-split { display: grid; grid-template-columns: 200px 1fr; gap: var(--space-8); }
         .journal-prompt { font-family: var(--font-serif); font-size: 2.5rem; line-height: 1.1; margin-top: var(--space-4); margin-bottom: var(--space-4); }
         .journal-sub { font-family: var(--font-reading); font-size: var(--text-xs); color: var(--color-dimmed); }
-        .journal-textarea { width: 100%; min-height: 160px; background: transparent; border: var(--border-thin); color: var(--color-text); font-family: var(--font-reading); font-size: var(--text-base); padding: var(--space-4); line-height: 1.6; resize: vertical; margin-bottom: var(--space-4); transition: border-color var(--transition-fast); }
+        .journal-textarea { width: 100%; min-height: 160px; background: transparent; border: var(--border-thin); color: var(--color-text); font-family: var(--font-reading); font-size: var(--text-base); padding: var(--space-4); line-height: 1.6; resize: vertical; margin-bottom: var(--space-4); }
         .journal-textarea:focus { outline: none; border-color: var(--color-text); }
+        .btn-black { display: inline-block; background: var(--color-text); color: var(--color-bg); font-family: var(--font-brand); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-2) var(--space-4); text-decoration: none; border: none; cursor: pointer; }
 
         @media (max-width: 768px) {
-            .overview-header { flex-direction: column; gap: var(--space-4); }
-            .overview-title { font-size: var(--text-3xl); }
-            .row-num { width: 40px; }
-            .row-title { font-size: var(--text-xl); }
-            .day-header-grid { grid-template-columns: 1fr; gap: var(--space-3); }
-            .dh-title { font-size: 3rem; }
-            .content-split { grid-template-columns: 1fr; border-right: none; padding-right: 0; }
-            .reflection-col { border-right: none; padding-right: 0; border-bottom: var(--border-thin); padding-bottom: var(--space-8); }
-            .journal-split { grid-template-columns: 1fr; }
+            .overview-header, .day-header-grid, .content-split, .journal-split { grid-template-columns: 1fr; gap: var(--space-4); }
+            .reflection-col { border-right: none; padding-right: 0; border-bottom: var(--border-thin); padding-bottom: var(--space-6); }
+            .challenge-card { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
         }
     </style>
 </head>
@@ -99,7 +102,7 @@
                     <li><a href="/blog" style="color: var(--color-dimmed);">Blog</a></li>
                     <li><a href="/dashboard" style="border-bottom: var(--border-thin);">Dashboard</a></li>
                 </ul>
-                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin); background: none; color: inherit;">[ Day ]</button>
+                <button id="theme-toggle" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--space-4); padding: 2px var(--space-1); border: var(--border-thin); background: none; color: inherit;">[ Night ]</button>
             </nav>
         </div>
     </header>
@@ -107,67 +110,86 @@
     <main class="container" style="flex: 1; padding-bottom: var(--space-12);">
         
         <!-- ==========================================
-             VIEW 1: OVERVIEW LIST
+             VIEW 1: THE HUB VIEW (Main Dashboard Landing)
              ========================================== -->
-        <div id="view-overview">
+        <div id="view-hub">
+            <div class="overview-header" style="padding: var(--space-8) 0 var(--space-8) 0;">
+                <div>
+                    <div class="overview-meta">SYSTEM ARCHITECTURE</div>
+                    <h1 class="overview-title">Your Disciplines.</h1>
+                </div>
+                <div style="max-width: 420px; padding-top: var(--space-3);">
+                    <p style="font-family: var(--font-serif); font-size: var(--text-lg); color: var(--color-dimmed); line-height: 1.6;">Select an active modular layer to reconstruct your attention vectors. Locked sequences can be integrated via signature access keys.</p>
+                </div>
+            </div>
+            
+            <div class="list-header">
+                <span>AVAILABLE MODULES</span>
+                <span id="hub-telemetry">INITIALIZING SECURITY SYSTEM...</span>
+            </div>
+
+            <div id="hub-container" class="hub-grid">
+                <!-- Injected via app.js -->
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 2: CHALLENGE OVERVIEW (5-Day Track)
+             ========================================== -->
+        <div id="view-challenge-overview" style="display: none;">
+            <button class="day-back" onclick="navigateToHub()">← Return to Master Hub</button>
             <div class="overview-header">
                 <div style="flex: 1;">
-                    <div class="overview-meta">FIVE DAYS · ONE DISCIPLINE</div>
-                    <h1 class="overview-title">Reconstruct<br><em style="font-style: italic;">your attention.</em></h1>
+                    <div class="overview-meta" id="ch-meta-label">FIVE DAYS · ONE DISCIPLINE</div>
+                    <h1 class="overview-title" id="ch-title-label">Challenge Title</h1>
                 </div>
                 <div style="flex: 1; max-width: 420px; padding-top: var(--space-3);">
-                    <p class="overview-desc">An interactive five-day study in presence. Each morning unlocks a new architectural element — breath, concentration, sensation, savor, stillness.</p>
-                    <a href="/assets/workbook.pdf" target="_blank" class="btn-black">DOWNLOAD YOUR COMPANION ARCHITECTURE WORKBOOK (PDF)</a>
+                    <p class="overview-desc" id="ch-desc-label">Challenge description goes here.</p>
+                    <a id="ch-workbook-btn" href="#" target="_blank" class="btn-black">DOWNLOAD COMPANION WORKBOOK (PDF)</a>
                 </div>
             </div>
 
             <div class="list-header">
                 <span>THE FIVE DAYS</span>
-                <span id="progress-text">0 / 5 COMPLETE</span>
+                <span id="ch-progress-text">0 / 5 COMPLETE</span>
             </div>
 
             <div id="days-list-container">
-                <!-- Javascript will inject the 5 rows here -->
+                <!-- Injected via app.js -->
             </div>
         </div>
 
         <!-- ==========================================
-             VIEW 2: DAY DETAIL (High-End Editorial Layout)
+             VIEW 3: DAY DETAIL (Editorial Dual Column)
              ========================================== -->
-        <div id="view-day" style="display: none; padding-top: var(--space-8);">
-            <button class="day-back" onclick="closeDay()">← Back to Overview</button>
+        <div id="view-day-detail" style="display: none; padding-top: var(--space-4);">
+            <button class="day-back" onclick="navigateToChallenge(currentChallengeId)">← Back to Track Overview</button>
             
-            <!-- HEADER -->
             <div class="day-header-grid">
                 <div class="dh-meta">
                     Day <span id="d-num">01</span> / 05<br>
-                    <span id="d-meta">THE FOUNDATION</span>
+                    <span id="d-meta">THE LAYER</span>
                 </div>
-                <h1 class="dh-title" id="d-title">Mindful Breathing</h1>
+                <h1 class="dh-title" id="d-title">Day Title</h1>
             </div>
 
-            <!-- AUDIO PLAYER SECTION -->
             <div class="audio-section">
                 <div class="flex-between">
                     <div class="a-meta">AUDITORY REALIGNMENT</div>
                     <div class="a-meta">00:00 / <span id="d-audio-time">05:00</span></div>
                 </div>
-                <div class="a-title" id="d-audio-title">Day 1 Auditory Realignment — Introduction to Breath</div>
+                <div class="a-title" id="d-audio-title">Audio Title</div>
                 <div class="audio-ui">
                     <button class="play-btn"></button>
                     <div class="progress-bar"><div class="progress-fill"></div></div>
                 </div>
             </div>
 
-            <!-- DUAL COLUMN CONTENT -->
             <div class="content-split">
-                <!-- Left: Reflection -->
                 <div class="reflection-col">
                     <div class="section-label">— REFLECTION</div>
                     <div id="d-reflection" class="drop-cap-text"></div>
                 </div>
-                
-                <!-- Right: Action -->
                 <div class="action-col">
                     <div class="section-label">— ACTION</div>
                     <div id="d-action-intro" class="action-intro"></div>
@@ -176,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- JOURNAL SECTION -->
             <div class="journal-split">
                 <div class="journal-meta-col">
                     <div class="section-label">THE JOURNAL</div>
@@ -186,7 +207,7 @@
                 <div class="journal-input-col">
                     <textarea id="d-journal" class="journal-textarea" placeholder="Begin writing..."></textarea>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <button class="btn-black" onclick="saveAndComplete()">Save & Complete Day</button>
+                        <button class="btn-black" onclick="saveAndCompleteDay()">Save & Complete Day</button>
                         <span id="sync-status" style="font-family: var(--font-brand); font-size: var(--text-xs); color: var(--color-dimmed);"></span>
                     </div>
                 </div>
@@ -207,185 +228,7 @@
         </div>
     </footer>
 
-    <!-- ==========================================================================
-         DASHBOARD LOGIC & DATA
-         ========================================================================== -->
-    <script>
-        const challengeData = {
-            1: {
-                meta: "The Foundation",
-                title: "Mindful Breathing",
-                audioTitle: "Day 1 Auditory Realignment — Introduction to Breath",
-                audioTime: "05:00",
-                reflection: "Mindfulness is the practice of being fully present. Not in the future, and not in the past. It is recognizing and appreciating the happiness ALREADY in your life. There are many people who are alive, and yet aren't even AWARE that they are alive. Mindfulness is being fully aware of the miracle of life and present to enjoy that miracle. When you are aware of the happiness and energy already around you, you can step into that happiness and joy. You can be ESTABLISHED in the present moment. Remember this: mindfulness is the connection and awareness of the mind and body. Mindfulness should NOT be work or effort. You don't need to make an effort to breathe in... or enjoy a sunset... or savor a meal. Mindfulness brings both inner and outer silence. This silence brings PEACE.",
-                actionIntro: "The most natural place to begin the practice of mindfulness is with breathing. Breath is foundational to everything you do. Every moment features a breath in and a breath out. To get started, practice mindful breathing for a MINIMUM of 5 minutes.",
-                steps: [
-                    "Breathe in. Take note of the air moving through your nose and mouth and filling your lungs. ENJOY that in-breath. Savor your life. Celebrate your LIFE.",
-                    "Hold your in-breath for a moment. Feel the air in your lungs. Be aware of the oxygen filling your body with life and energy.",
-                    "Let the breath OUT slowly. Feel your body relax as the air exits. Be present as the air passes through your nose and mouth."
-                ],
-                actionOutro: "Repeat the process. Inevitably, your mind will wander. When this happens, GENTLY, and without judgment, bring it back to your breath."
-            },
-            2: {
-                meta: "The Unification",
-                title: "Mindful Concentration",
-                audioTitle: "Day 2 Auditory Realignment — Unifying the Fractured Mind",
-                audioTime: "05:00",
-                reflection: "Very few people can concentrate EFFECTIVELY. Their minds are fractured. Distracted. Overwhelmed by thoughts and worries and noise. Their mobile phone beeps every three minutes, sending their attention in a different direction. A fractured mind is a harried mind. A mind without PEACE. The ability to concentrate brings the scattered mind BACK TOGETHER. Concentration unifies the mind and body. Concentration is one of the KEYS to mindfulness. Concentration is a bedrock of HAPPINESS. As Thich Nhat Hanh says: \"Suppose you are offered a cup of tea, very fragrant, very good tea. If your mind is distracted, you cannot really enjoy the tea. You have to be mindful of the tea, you have to be concentrated on it, so the tea can reveal its fragrance and wonder to you.\"",
-                actionIntro: "Pour yourself a glass of water or one of your favorite beverages.",
-                steps: [
-                    "As the water enters the glass, pay attention to how it swirls. Look at the droplets scatter on the side of the glass.",
-                    "Take a sip of the water. Fix your attention on that sip of water from beginning to end. Feel it moisten your mouth and lips.",
-                    "Concentrate on the feeling of it as it slides down your throat. Feel its delicious coolness."
-                ],
-                actionOutro: "Follow the sip from beginning to end. If a different thought appears in your mind, gently bring your concentration back to the glass of water. Repeat until finished."
-            },
-            3: {
-                meta: "The Body",
-                title: "Mindful Feeling",
-                audioTitle: "Day 3 Auditory Realignment — Somatic Awareness Without Judgment",
-                audioTime: "02:10",
-                reflection: "Few people are truly aware of their bodies. Or if they are aware, they are so only in a NEGATIVE way. They look in the mirror and hate what they see. Body mindfulness is paying attention to your body WITHOUT passing judgment. It is simply awareness of what you feel, of what your body is touching, of the pleasant and unpleasant sensations that you encounter at each moment. You are not EVALUATING these things... simply taking note of them. When you are mindful of your body, you are fully present. Your mind and body are CLOSELY connected. You can be at PEACE with who you are, NOT who you think you should be.",
-                actionIntro: "Sit in a chair or lie down. Get comfortable.",
-                steps: [
-                    "Bring attention to your body. Notice the feeling of your body against the floor or the chair. Feel the weight of your legs, arms, and head.",
-                    "Take a deep, cleansing breath. Be mindful of your breath, feeling your stomach and chest rise and then fall.",
-                    "Bring your attention to your head and face. Feel any areas of tension and try to let them soften. Let your jaw, neck, and throat soften and relax.",
-                    "Notice your shoulders and arms. Be mindful of tension and let it ease. Relax your hands and feel them against the chair or floor.",
-                    "Feel your legs and feet. Let them relax. Soften. Drain of tension. Take one more deep breath, notice your entire body, and let it out."
-                ],
-                actionOutro: ""
-            },
-            4: {
-                meta: "The Savor",
-                title: "Mindful Eating",
-                audioTitle: "Day 4 Auditory Realignment — Savoring the Baseline",
-                audioTime: "02:12",
-                reflection: "Very few people actually pay ATTENTION to what they are eating. They RUSH through their meals, wanting to QUICKLY move to the next thing. Or they mindlessly scroll through their phone, not giving ANY thought to the food in front of them. They eat past the point of fullness. They eat to NUMB their feelings. They don't SAVOR and enjoy the experience of eating. Through mindful eating, you CONNECT your mind and body. You truly TASTE what you're eating, feeling textures and nuances of flavors. You CONCENTRATE on the beautiful experience of eating. Mindful eating allows every meal to be a celebration.",
-                actionIntro: "Choose a snack or meal you would normally eat. Bring all your attention to it with curiosity and exploration.",
-                steps: [
-                    "Take a moment to be aware of your body. Feel any sensations of hunger, both pleasant and unpleasant. Take several deep breaths.",
-                    "Assess the food in front of you. Study it closely. Its shape. Its color. Smell it deeply, noting the different notes and aromas.",
-                    "Take a bite, and focus entirely on what you're experiencing. Are you tasting salty? Sweet? Tangy? What textures are you encountering? Savor each bite without rushing.",
-                    "Pay attention to the feelings of hunger and fullness. As you become full, gently give yourself permission to stop. Note your thoughts when you stop."
-                ],
-                actionOutro: ""
-            },
-            5: {
-                meta: "The Stillness",
-                title: "Mindful Relaxation",
-                audioTitle: "Day 5 Auditory Realignment — The Radical Act of Simply Being",
-                audioTime: "05:00",
-                reflection: "It's very easy to go through life feeling RUSHED. Moving from one thing to the next, not stopping to THINK, to breathe, to reflect. Always hurried, never peaceful. Always moving, never RESTING. A person that never stops will eventually BURN out. Crash. Collapse. Mindful relaxation allows you to actually LIVE your life and to truly LOVE your life... to be at peace... to stop and APPRECIATE the things you already have. To simply enjoy the PRESENT. When you implement mindful relaxation, your days become peaceful and JOYFUL.",
-                actionIntro: "Set aside 5 minutes to practice mindful relaxation. Choose a comfortable place to sit (chair or outside on the grass).",
-                steps: [
-                    "Take several slow, mindful breaths, experiencing the air moving through your throat and mouth. Fill your lungs.",
-                    "Do a body scan. Breathe into any areas of tension and let them soften and relax.",
-                    "Take note of the things happening around you (birds singing, people talking, cars driving). Concentrate fully on those sounds. Don't judge them, simply observe them.",
-                    "Feel your surroundings. Feel the seat or ground under you. Feel the wind brushing against you and the sun warming you. Let the sensations of simply being wash over you. Stay fully present."
-                ],
-                actionOutro: ""
-            }
-        };
-
-        let currentDayOpen = 1;
-        let completedDays = JSON.parse(localStorage.getItem('mindset_completed_days')) || [];
-
-        function renderOverview() {
-            const listContainer = document.getElementById('days-list-container');
-            listContainer.innerHTML = '';
-            
-            document.getElementById('progress-text').textContent = `${completedDays.length} / 5 COMPLETE`;
-
-            for (let i = 1; i <= 5; i++) {
-                const data = challengeData[i];
-                const isComplete = completedDays.includes(i);
-                const isUnlocked = i === 1 || completedDays.includes(i - 1);
-                
-                let statusText = '🔒 LOCKED';
-                let rowClass = 'day-row locked';
-                let onClickAttr = '';
-
-                if (isComplete) {
-                    statusText = '— COMPLETE';
-                    rowClass = 'day-row';
-                    onClickAttr = `onclick="openDay(${i})"`;
-                } else if (isUnlocked) {
-                    statusText = 'BEGIN —';
-                    rowClass = 'day-row';
-                    onClickAttr = `onclick="openDay(${i})"`;
-                    statusText = `<span style="color: var(--color-text); font-weight: bold;">${statusText}</span>`;
-                }
-
-                const html = `
-                    <div class="${rowClass}" ${onClickAttr}>
-                        <div class="row-num">0${i}</div>
-                        <div class="row-content">
-                            <div class="row-meta">${data.meta}</div>
-                            <div class="row-title">${data.title}</div>
-                        </div>
-                        <div class="row-status">${statusText}</div>
-                    </div>
-                `;
-                listContainer.insertAdjacentHTML('beforeend', html);
-            }
-        }
-
-        function openDay(dayId) {
-            currentDayOpen = dayId;
-            const data = challengeData[dayId];
-
-            document.getElementById('d-num').textContent = `0${dayId}`;
-            document.getElementById('d-meta').textContent = data.meta;
-            document.getElementById('d-title').textContent = data.title;
-            document.getElementById('d-audio-title').textContent = data.audioTitle;
-            document.getElementById('d-audio-time').textContent = data.audioTime;
-            document.getElementById('d-reflection').textContent = data.reflection;
-            
-            document.getElementById('d-action-intro').textContent = data.actionIntro;
-            document.getElementById('d-action-outro').textContent = data.actionOutro;
-            
-            const stepsContainer = document.getElementById('d-steps');
-            stepsContainer.innerHTML = '';
-            data.steps.forEach((stepText, index) => {
-                stepsContainer.insertAdjacentHTML('beforeend', `
-                    <div class="step-block">
-                        <div class="step-num">0${index + 1}</div>
-                        <div class="step-text">${stepText}</div>
-                    </div>
-                `);
-            });
-
-            const savedNote = localStorage.getItem(`mindset_journal_day_${dayId}`) || '';
-            document.getElementById('d-journal').value = savedNote;
-            document.getElementById('sync-status').textContent = '';
-
-            document.getElementById('view-overview').style.display = 'none';
-            document.getElementById('view-day').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function closeDay() {
-            document.getElementById('view-day').style.display = 'none';
-            document.getElementById('view-overview').style.display = 'block';
-            renderOverview();
-            window.scrollTo(0, 0);
-        }
-
-        function saveAndComplete() {
-            const journalText = document.getElementById('d-journal').value;
-            localStorage.setItem(`mindset_journal_day_${currentDayOpen}`, journalText);
-            
-            if (!completedDays.includes(currentDayOpen)) {
-                completedDays.push(currentDayOpen);
-                localStorage.setItem('mindset_completed_days', JSON.stringify(completedDays));
-            }
-
-            document.getElementById('sync-status').textContent = "Saving... Day marked complete.";
-            setTimeout(() => { closeDay(); }, 800);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { renderOverview(); });
-    </script>
+    <!-- Connect Core App Logic Matrix -->
+    <script src="/js/app.js"></script>
 </body>
 </html>
