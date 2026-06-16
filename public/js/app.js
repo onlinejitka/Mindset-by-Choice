@@ -7,7 +7,7 @@
 
 // 1. GLOBAL SYSTEM CONFIGURATION
 const CURRENT_FREE_CHALLENGE = 'mindfulness'; // Hardcoded free variant bypass rule
-const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/YOUR_ACTUAL_HOOK_ID'; // Replace with real webhook string
+const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/ecyjcbh4e561yxpa1yet2c6gbmem1ewc'; // Replace with real webhook string
 const ETSY_COLLECTION_URL = 'https://www.etsy.com/shop/YourShopName'; // Fallback link for locked assets
 
 // 2. DATA MATRIX ARCHITECTURE
